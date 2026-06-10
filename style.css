@@ -5,17 +5,18 @@
   --panel-bg: rgba(10, 10, 10, 0.4);
   --panel-border: rgba(255, 255, 255, 0.06);
   --panel-border-hover: rgba(255, 255, 255, 0.15);
-  
-  --accent-color: #b6111b; /* Crimson Blood */
+
+  --accent-color: #b6111b;
+  /* Crimson Blood */
   --accent-glow: rgba(182, 17, 27, 0.6);
   --text-primary: #ffffff;
   --text-secondary: rgba(255, 255, 255, 0.6);
   --text-muted: rgba(255, 255, 255, 0.35);
-  
+
   --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   --transition-normal: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   --border-radius: 12px;
-  
+
   --font-serif: 'Cormorant Garamond', serif;
   --font-display: 'Syne', sans-serif;
   --font-sans: 'Inter', sans-serif;
@@ -227,7 +228,7 @@ body::-webkit-scrollbar {
 
 .fame-member:hover .avatar {
   border-color: rgba(255, 255, 255, 0.95) !important;
-  box-shadow: 0 0 35px rgba(255, 255, 255, 0.65), 0 10px 30px rgba(0,0,0,0.8) !important;
+  box-shadow: 0 0 35px rgba(255, 255, 255, 0.65), 0 10px 30px rgba(0, 0, 0, 0.8) !important;
 }
 
 .member-name {
@@ -307,10 +308,24 @@ body::-webkit-scrollbar {
   display: inline-block;
 }
 
-.online .status-indicator { background-color: #23a55a; box-shadow: 0 0 8px #23a55a; }
-.idle .status-indicator { background-color: #f0b232; box-shadow: 0 0 8px #f0b232; }
-.dnd .status-indicator { background-color: #f23f43; box-shadow: 0 0 8px #f23f43; }
-.offline .status-indicator { background-color: #80848e; }
+.online .status-indicator {
+  background-color: #23a55a;
+  box-shadow: 0 0 8px #23a55a;
+}
+
+.idle .status-indicator {
+  background-color: #f0b232;
+  box-shadow: 0 0 8px #f0b232;
+}
+
+.dnd .status-indicator {
+  background-color: #f23f43;
+  box-shadow: 0 0 8px #f23f43;
+}
+
+.offline .status-indicator {
+  background-color: #80848e;
+}
 
 .activity-details {
   font-size: 0.8rem;
@@ -371,14 +386,16 @@ body::-webkit-scrollbar {
 }
 
 /* Bottom trails & Marquees */
-.section-777, .section-members {
+.section-777,
+.section-members {
   width: 100%;
   overflow: hidden;
   position: relative;
   padding: 10px 0;
 }
 
-.button-trail-left, .button-trail-right {
+.button-trail-left,
+.button-trail-right {
   display: flex;
   gap: 16px;
   white-space: nowrap;
@@ -393,7 +410,8 @@ body::-webkit-scrollbar {
   animation: scroll-right 35s linear infinite;
 }
 
-.button-trail-left:hover, .button-trail-right:hover {
+.button-trail-left:hover,
+.button-trail-right:hover {
   animation-play-state: paused;
 }
 
@@ -408,7 +426,8 @@ body::-webkit-scrollbar {
   border-radius: 50% !important;
   padding: 0 !important;
   position: relative;
-  font-size: 0 !important; /* Hides text label */
+  font-size: 0 !important;
+  /* Hides text label */
   text-decoration: none;
   cursor: pointer;
 }
@@ -433,15 +452,26 @@ body::-webkit-scrollbar {
   z-index: 2;
 }
 
-.status.online { background-color: #23a55a; }
-.status.idle { background-color: #f0b232; }
-.status.dnd { background-color: #f23f43; }
-.status.offline { background-color: #80848e; }
+.status.online {
+  background-color: #23a55a;
+}
+
+.status.idle {
+  background-color: #f0b232;
+}
+
+.status.dnd {
+  background-color: #f23f43;
+}
+
+.status.offline {
+  background-color: #80848e;
+}
 
 .trail-btn:hover img {
   border-color: rgba(255, 255, 255, 0.95);
   transform: scale(1.1);
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(0,0,0,0.6);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.6);
 }
 
 .presence-popup {
@@ -486,7 +516,7 @@ body::-webkit-scrollbar {
   padding: 14px 20px;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 10px 40px rgba(0,0,0,0.8), inset 0 0 20px rgba(255,255,255,0.02);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(255, 255, 255, 0.02);
   z-index: 2500;
 }
 
@@ -620,7 +650,7 @@ body::-webkit-scrollbar {
 #volume-slider {
   width: 65px;
   height: 3px;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 4px;
   outline: none;
   -webkit-appearance: none;
@@ -668,28 +698,55 @@ footer {
 
 /* Animations */
 @keyframes breathe {
-  0% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.05); }
-  100% { text-shadow: 0 0 25px rgba(255, 255, 255, 0.2); }
+  0% {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+  }
+
+  100% {
+    text-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
+  }
 }
 
 @keyframes pulse-opacity {
-  0% { opacity: 0.3; }
-  100% { opacity: 0.7; }
+  0% {
+    opacity: 0.3;
+  }
+
+  100% {
+    opacity: 0.7;
+  }
 }
 
 @keyframes float-logo {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 @keyframes scroll-left {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 @keyframes scroll-right {
-  0% { transform: translateX(-50%); }
-  100% { transform: translateX(0); }
+  0% {
+    transform: translateX(-50%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
 }
 
 /* Responsive Breakpoints */
@@ -703,22 +760,28 @@ footer {
   .main-logo {
     max-width: 380px;
   }
+
   .fame-member {
     padding: 20px 15px;
   }
+
   .avatar-container {
     width: 90px;
     height: 90px;
   }
+
   .music-player {
     padding: 10px 15px;
   }
+
   .player-container {
     gap: 14px;
   }
+
   .track-details {
     max-width: 100px;
   }
+
   #volume-slider {
     width: 50px;
   }
@@ -728,6 +791,7 @@ footer {
   .hof-container {
     grid-template-columns: 1fr;
   }
+
   .player-left {
     display: none;
   }
@@ -846,13 +910,28 @@ footer {
 }
 
 /* Status selection hooks from modal-status-badge classes */
-.profile-modal:has(.modal-status-badge.online) .status-glow { background-color: #23a55a; box-shadow: 0 0 10px #23a55a; }
-.profile-modal:has(.modal-status-badge.idle) .status-glow { background-color: #f0b232; box-shadow: 0 0 10px #f0b232; }
-.profile-modal:has(.modal-status-badge.dnd) .status-glow { background-color: #f23f43; box-shadow: 0 0 10px #f23f43; }
-.profile-modal:has(.modal-status-badge.offline) .status-glow { background-color: #80848e; }
+.profile-modal:has(.modal-status-badge.online) .status-glow {
+  background-color: #23a55a;
+  box-shadow: 0 0 10px #23a55a;
+}
+
+.profile-modal:has(.modal-status-badge.idle) .status-glow {
+  background-color: #f0b232;
+  box-shadow: 0 0 10px #f0b232;
+}
+
+.profile-modal:has(.modal-status-badge.dnd) .status-glow {
+  background-color: #f23f43;
+  box-shadow: 0 0 10px #f23f43;
+}
+
+.profile-modal:has(.modal-status-badge.offline) .status-glow {
+  background-color: #80848e;
+}
 
 .modal-status-badge {
-  display: none !important; /* Hide old status badge element */
+  display: none !important;
+  /* Hide old status badge element */
 }
 
 #modal-display-name {
@@ -863,11 +942,12 @@ footer {
   margin-top: 15px !important;
   margin-bottom: 5px !important;
   letter-spacing: 0.05em !important;
-  text-shadow: 0 0 8px rgba(255,255,255,0.3) !important;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3) !important;
 }
 
 #modal-username {
-  display: none !important; /* Hide username for a clean aesthetic */
+  display: none !important;
+  /* Hide username for a clean aesthetic */
 }
 
 .modal-body {
@@ -878,7 +958,8 @@ footer {
 }
 
 .profile-section-title {
-  display: none !important; /* Hide section titles */
+  display: none !important;
+  /* Hide section titles */
 }
 
 .modal-bio {
@@ -1043,7 +1124,7 @@ footer {
     overflow-y: auto;
     padding: 10px;
   }
-  
+
   .modal-content.profile-card {
     width: 320px !important;
     padding: 35px 20px !important;

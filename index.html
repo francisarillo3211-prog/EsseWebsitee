@@ -202,7 +202,9 @@
                 backgroundMusicName: "Me And My Brother",
                 backgroundMusicArtist: "5ive",
                 backgroundMusicCoverUrl: "assets/zz.png",
-                socials: {}
+                socials: {
+                    tiktok: "https://www.tiktok.com/@trevoresse?lang=en-GB"
+                }
             },
             {
                 name: "Quer",
@@ -456,7 +458,7 @@
                 });
             }
             if (socialsGrid.children.length === 0) {
-                socialsGrid.innerHTML = '<div style="color:var(--text-muted); text-align: center; width: 100%;">No linked socials</div>';
+                socialsGrid.innerHTML = '<div style="color:var(--text-muted); text-align: center; width: 100%;"></div>';
             }
 
             modal.classList.add('active');

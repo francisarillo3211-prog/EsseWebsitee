@@ -27,6 +27,14 @@
         <!-- Logo -->
         <img src="assets/zz.png" class="main-logo" draggable="false" alt="Logo">
 
+        <!-- Founder -->
+        <section class="hall-of-fame">
+            <div class="button-header">
+                <h1>Founder</h1>
+            </div>
+            <div class="hof-container" id="founder-list"></div>
+        </section>
+
         <!-- Hall of Fame -->
         <section class="hall-of-fame">
             <div class="button-header">
@@ -84,7 +92,7 @@
             <div class="player-right">
                 <div class="volume-control">
                     <button id="mute-toggle" class="control-btn"><i class='bx bx-volume-full'></i></button>
-                    <input type="range" id="volume-slider" min="0" max="100" value="50">
+                    <input type="range" id="volume-slider" min="0" max="100" value="30">
                 </div>
             </div>
         </div>
@@ -144,6 +152,173 @@
         </div>
     </div>
 
+    <!-- Edit Profile Modal -->
+    <div id="edit-profile-modal" class="edit-profile-modal">
+        <div class="edit-modal-card">
+            <div class="edit-modal-header">
+                <h3 id="edit-modal-title">Edit Profile</h3>
+                <button type="button" class="edit-close-btn" onclick="closeEditProfile()">&times;</button>
+            </div>
+
+            <!-- Step 1: PIN Lock -->
+            <div id="edit-pin-step">
+                <div class="edit-field">
+                    <label for="edit-pin-input">Enter Member PIN</label>
+                    <input type="password" id="edit-pin-input" placeholder="Enter your PIN to unlock" onkeydown="if(event.key==='Enter') verifyEditPin();">
+                </div>
+                <button type="button" class="edit-btn-primary" onclick="verifyEditPin()">Unlock</button>
+                <div id="edit-pin-msg" class="edit-status-msg"></div>
+            </div>
+
+            <!-- Step 2: Profile Form -->
+            <div id="edit-form-step" style="display: none;">
+                <div class="edit-two-col">
+                    <div class="edit-field">
+                        <label for="edit-name">Display Name</label>
+                        <input type="text" id="edit-name" placeholder="Display Name">
+                    </div>
+                    <div class="edit-field">
+                        <label for="edit-section">Section</label>
+                        <select id="edit-section">
+                            <option value="founder">Founder</option>
+                            <option value="shinigami">Shinigami</option>
+                            <option value="og">OG</option>
+                            <option value="members">Members</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="edit-field">
+                    <label for="edit-bio">Bio</label>
+                    <textarea id="edit-bio" rows="2" placeholder="Write your bio..."></textarea>
+                </div>
+
+                <div class="edit-field">
+                    <label>Background (Pick preset, paste URL, or upload)</label>
+                    <select id="edit-bg-preset" onchange="onPresetSelect('bg', this)">
+                        <option value="">-- Pick a preset background --</option>
+                        <option value="assets/francis.png">francis.png</option>
+                        <option value="assets/zz.png">zz.png</option>
+                        <option value="assets/z.png">z.png</option>
+                        <option value="assets/12.png">12.png</option>
+                        <option value="assets/main-page5.gif">main-page5.gif</option>
+                        <option value="assets/Mallari.gif">Mallari.gif</option>
+                    </select>
+                    <input type="url" id="edit-bg-url" placeholder="Or paste image URL (https://...)" style="margin-top: 8px;">
+                    <div class="edit-upload-row">
+                        <label class="edit-upload-label">
+                            <i class='bx bx-upload'></i> <span id="edit-bg-upload-text">Upload Image / GIF from device</span>
+                            <input type="file" id="edit-bg-file" accept="image/*" onchange="handleFileUpload('bg', this)">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="edit-field">
+                    <label>Profile Music (Pick preset, paste URL, or upload)</label>
+                    <select id="edit-music-preset" onchange="onPresetSelect('music', this)">
+                        <option value="">-- Pick a preset song --</option>
+                        <option value="assets/I Wonder.mp3" data-title="I Wonder" data-artist="Kanye West">I Wonder - Kanye West</option>
+                        <option value="assets/SUPAFLY - GTFA! (lyrics).mp3" data-title="GTFA!" data-artist="SUPAFLY">GTFA! - SUPAFLY</option>
+                        <option value="assets/5ive - Me And My Brother.mp3" data-title="Me And My Brother" data-artist="5ive">Me And My Brother - 5ive</option>
+                        <option value="assets/KODAK BLU - gaspari (OLV).mp3" data-title="Kodak Blu" data-artist="Gaspari777">Kodak Blu - Gaspari777</option>
+                        <option value="assets/mainMusic.mp3" data-title="Ya Dig?" data-artist="Hev Abi">Ya Dig? - Hev Abi</option>
+                        <option value="assets/si_slime_tumatawag.mp3" data-title="Ghetto Love Calls" data-artist="Slimescar">Ghetto Love Calls - Slimescar</option>
+                        <option value="assets/sensuMusic.wav" data-title="Sensu" data-artist="Esse">Sensu</option>
+                    </select>
+                    <input type="url" id="edit-music-url" placeholder="Or paste .mp3 URL (https://...)" style="margin-top: 8px;">
+                    <div class="edit-upload-row">
+                        <label class="edit-upload-label">
+                            <i class='bx bx-music'></i> <span id="edit-music-upload-text">Upload Audio (.mp3 / .wav) from device</span>
+                            <input type="file" id="edit-music-file" accept="audio/*" onchange="handleFileUpload('music', this)">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="edit-two-col">
+                    <div class="edit-field">
+                        <label for="edit-music-name">Song Title</label>
+                        <input type="text" id="edit-music-name" placeholder="Song Title">
+                    </div>
+                    <div class="edit-field">
+                        <label for="edit-music-artist">Artist</label>
+                        <input type="text" id="edit-music-artist" placeholder="Artist">
+                    </div>
+                </div>
+
+                <button type="button" id="edit-save-btn" class="edit-btn-primary" onclick="saveProfileChanges()">Save Changes</button>
+                <div id="edit-form-msg" class="edit-status-msg"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Admin Panel Modal -->
+    <div id="admin-modal" class="edit-profile-modal">
+        <div class="edit-modal-card" style="max-width: 520px;">
+            <div class="edit-modal-header">
+                <h3>Admin Panel</h3>
+                <button type="button" class="edit-close-btn" onclick="closeAdminPanel()">&times;</button>
+            </div>
+
+            <!-- Admin Login -->
+            <div id="admin-login-step">
+                <div class="edit-field">
+                    <label for="admin-pin-input">Admin Password</label>
+                    <input type="password" id="admin-pin-input" placeholder="Enter Admin Password" onkeydown="if(event.key==='Enter') verifyAdminLogin();">
+                </div>
+                <button type="button" class="edit-btn-primary" onclick="verifyAdminLogin()">Login</button>
+                <div id="admin-login-msg" class="edit-status-msg"></div>
+            </div>
+
+            <!-- Admin Dashboard -->
+            <div id="admin-dashboard-step" style="display: none;">
+                <div class="edit-two-col">
+                    <div class="edit-field">
+                        <label for="admin-new-name">Display Name *</label>
+                        <input type="text" id="admin-new-name" placeholder="e.g. Alex">
+                    </div>
+                    <div class="edit-field">
+                        <label for="admin-new-username">Username * (no spaces)</label>
+                        <input type="text" id="admin-new-username" placeholder="e.g. alex">
+                    </div>
+                </div>
+
+                <div class="edit-two-col">
+                    <div class="edit-field">
+                        <label for="admin-new-discord">Discord User ID *</label>
+                        <input type="text" id="admin-new-discord" placeholder="e.g. 123456789012345678">
+                    </div>
+                    <div class="edit-field">
+                        <label for="admin-new-pin">Member Edit PIN *</label>
+                        <input type="text" id="admin-new-pin" placeholder="e.g. 5678" value="1234">
+                    </div>
+                </div>
+
+                <div class="edit-field">
+                    <label for="admin-new-bio">Bio</label>
+                    <input type="text" id="admin-new-bio" placeholder="Esse Member.">
+                </div>
+
+                <div class="edit-field">
+                    <label for="admin-new-section">Section</label>
+                    <select id="admin-new-section">
+                        <option value="founder">Founder</option>
+                        <option value="shinigami">Shinigami</option>
+                        <option value="og">OG</option>
+                        <option value="members">Members</option>
+                    </select>
+                </div>
+
+                <button type="button" id="admin-add-btn" class="edit-btn-primary" onclick="adminAddMember()">+ Add Member</button>
+                <div id="admin-form-msg" class="edit-status-msg"></div>
+
+                <div style="margin-top: 22px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08);">
+                    <label style="display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.08em; color:rgba(255,255,255,0.65); margin-bottom:10px;">Current Members</label>
+                    <div id="admin-members-list" class="admin-members-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer>
         <div class="footer-bottom">
             <p>© Esse. | <a class="linkz" href="https://github.com/itsfrncsA">itsfrncsA</a></p>
@@ -167,6 +342,7 @@
             {
                 name: "Frncs",
                 username: "esse",
+                pin: "1234",
                 discordId: "285061795029450754",
                 bio: "OG Shinigami Member.",
                 background: "assets/francis.png",
@@ -182,6 +358,7 @@
             {
                 name: "!NX",
                 username: "qx_444",
+                pin: "1234",
                 discordId: "1294114074002718771",
                 bio: "Founder of Esse.",
                 background: "assets/zz.png",
@@ -194,9 +371,11 @@
             {
                 name: "Trevor",
                 username: "trevor",
+                pin: "1234",
                 discordId: "474567869519101953",
                 bio: "OG Member of Esse.",
                 background: "assets/zz.png",
+                section: "og",
                 hideFromHof: true,
                 backgroundMusicUrl: "assets/5ive - Me And My Brother.mp3",
                 backgroundMusicName: "Me And My Brother",
@@ -209,15 +388,18 @@
             {
                 name: "Quer",
                 username: "quer",
+                pin: "1234",
                 discordId: "1213158954197327932",
                 bio: "OG Member of Esse.",
                 background: "assets/zz.png",
+                section: "og",
                 hideFromHof: true,
                 socials: {}
             },
             {
-                name: "BXRT ",
-                username: "bxrt ",
+                name: "BXRT",
+                username: "bxrt",
+                pin: "1234",
                 discordId: "562605372611887112",
                 bio: "OG Shinigami Member.",
                 background: "assets/zz.png",
@@ -226,6 +408,7 @@
             {
                 name: "OWA",
                 username: "owa",
+                pin: "1234",
                 discordId: "823010677823635497",
                 bio: "Founder of Esse.",
                 background: "assets/zz.png",
@@ -234,6 +417,7 @@
             {
                 name: "Pxnta",
                 username: "pxnta",
+                pin: "1234",
                 discordId: "1223205105227010094",
                 bio: "Founder of Mallari.",
                 background: "assets/zz.png",
@@ -357,14 +541,19 @@
             return html;
         }
 
-        async function renderHallOfFame() {
-            const container = document.getElementById('hof-container');
+        async function renderMemberCards(containerId, list) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            if (list.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
             container.innerHTML = '<div style="color:white; text-align:center; grid-column:span 3;">✨ Loading Discord profiles... ✨</div>';
 
-            const hofMembers = members.filter(member => !member.hideFromHof);
-
             const membersWithData = await Promise.all(
-                hofMembers.map(async (member) => {
+                list.map(async (member) => {
                     const discordData = await fetchDiscordProfile(member.discordId);
                     return { ...member, discordData };
                 })
@@ -406,14 +595,25 @@
             }).join('');
         }
 
+        async function renderHallOfFame() {
+            const founderMembers = members.filter(member => member.section === 'founder');
+            const hofMembers = members.filter(member => !member.hideFromHof && (!member.section || member.section === 'shinigami'));
+            await Promise.all([
+                renderMemberCards('founder-list', founderMembers),
+                renderMemberCards('hof-container', hofMembers)
+            ]);
+        }
+
         // Reusable Custom Profile Overlay Logic with Audio Swap
         let savedMainTrack = null;
         let savedMainTime = 0;
         let savedMainPlaying = false;
+        let currentProfileUsername = null;
 
         function openProfile(username) {
             const member = members.find(m => m.username === username);
             if (!member) return;
+            currentProfileUsername = member.username;
 
             document.getElementById('modal-display-name').textContent = member.name;
             document.getElementById('modal-username').textContent = `@${member.username}`;
@@ -661,7 +861,9 @@
 
         window.addEventListener('hashchange', () => {
             const hash = window.location.hash.substring(1);
-            if (hash) {
+            if (hash === 'admin') {
+                openAdminPanel();
+            } else if (hash) {
                 openProfile(hash);
             } else {
                 closeProfile();
@@ -678,6 +880,7 @@
 
         let currentTrack = 0, isPlaying = false, isLooping = true;
         const audio = document.getElementById('background-music');
+        audio.volume = 0.3;
         const playPauseBtn = document.getElementById('play-pause');
         const prevBtn = document.getElementById('prev-track');
         const nextBtn = document.getElementById('next-track');
@@ -772,12 +975,476 @@
         // Check hash on startup to trigger modal
         const checkStartupHash = () => {
             const hash = window.location.hash.substring(1);
-            if (hash) {
+            if (hash === 'admin') {
+                openAdminPanel();
+            } else if (hash) {
                 openProfile(hash);
             }
         };
 
+        // Load saved profile customizations & new members from Firestore
+        async function loadCustomProfilesFromFirestore() {
+            if (typeof db === 'undefined') return;
+            try {
+                const snapshot = await db.collection('profiles').get();
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (!data) return;
+                    let member = members.find(m => m.username === doc.id);
+                    if (member) {
+                        if (data.name) member.name = data.name;
+                        if (data.pin) member.pin = String(data.pin);
+                        if (data.discordId) member.discordId = String(data.discordId);
+                        if (data.bio !== undefined) member.bio = data.bio;
+                        if (data.background !== undefined) member.background = data.background;
+                        if (data.backgroundMusicUrl !== undefined) member.backgroundMusicUrl = data.backgroundMusicUrl;
+                        if (data.backgroundMusicName !== undefined) member.backgroundMusicName = data.backgroundMusicName;
+                        if (data.backgroundMusicArtist !== undefined) member.backgroundMusicArtist = data.backgroundMusicArtist;
+                        if (data.section !== undefined) member.section = data.section;
+                        if (data.hideFromHof !== undefined) member.hideFromHof = data.hideFromHof;
+                    } else if (data.name && data.discordId) {
+                        members.push({
+                            name: data.name,
+                            username: doc.id,
+                            pin: data.pin ? String(data.pin) : '1234',
+                            discordId: String(data.discordId),
+                            bio: data.bio || 'Esse Member.',
+                            background: data.background || 'assets/zz.png',
+                            backgroundMusicUrl: data.backgroundMusicUrl || '',
+                            backgroundMusicName: data.backgroundMusicName || '',
+                            backgroundMusicArtist: data.backgroundMusicArtist || '',
+                            section: data.section || 'shinigami',
+                            hideFromHof: Boolean(data.hideFromHof) || (data.section && data.section !== 'shinigami'),
+                            socials: data.socials || {}
+                        });
+                    }
+                });
+                renderHallOfFame();
+                if (typeof window.FF === 'function') window.FF();
+                if (currentProfileUsername && document.getElementById('profile-modal').classList.contains('active')) {
+                    applyMemberToOpenModal(members.find(m => m.username === currentProfileUsername));
+                }
+            } catch (e) {
+                console.warn('Could not load custom profiles:', e);
+            }
+        }
+
+        function applyMemberToOpenModal(member) {
+            if (!member) return;
+            document.getElementById('modal-display-name').textContent = member.name;
+            document.getElementById('modal-bio').textContent = member.bio || "No biography available.";
+            document.getElementById('gate-member-name').textContent = member.name;
+
+            const modal = document.getElementById('profile-modal');
+            if (member.background) {
+                modal.style.setProperty('--profile-bg', `url('${member.background}')`);
+            } else {
+                modal.style.removeProperty('--profile-bg');
+            }
+
+            if (member.backgroundMusicUrl) {
+                if (!savedMainTrack) {
+                    savedMainTrack = playlist[currentTrack];
+                    savedMainTime = audio.currentTime;
+                    savedMainPlaying = isPlaying;
+                }
+                audio.src = member.backgroundMusicUrl;
+                audio.currentTime = 0;
+                isPlaying = true;
+                audio.play().then(() => {
+                    playPauseBtn.innerHTML = '<i class="bx bx-pause"></i>';
+                }).catch(e => console.log("Member audio play blocked:", e));
+
+                trackTitle.textContent = member.backgroundMusicName || "Custom Track";
+                trackArtist.textContent = member.backgroundMusicArtist || member.name;
+                trackArtwork.src = member.backgroundMusicCoverUrl || member.background || "https://placehold.co/54";
+            }
+        }
+
+        // Edit Profile Modal Controls
+        function populateEditForm(member) {
+            document.getElementById('edit-name').value = member.name || '';
+            document.getElementById('edit-section').value = member.section || (member.hideFromHof ? 'og' : 'shinigami');
+            document.getElementById('edit-bio').value = member.bio || '';
+            document.getElementById('edit-bg-url').value = member.background || '';
+            document.getElementById('edit-bg-preset').value = '';
+            document.getElementById('edit-music-url').value = member.backgroundMusicUrl || '';
+            document.getElementById('edit-music-preset').value = '';
+            document.getElementById('edit-music-name').value = member.backgroundMusicName || '';
+            document.getElementById('edit-music-artist').value = member.backgroundMusicArtist || '';
+            document.getElementById('edit-bg-upload-text').textContent = 'Upload Image / GIF from device';
+            document.getElementById('edit-music-upload-text').textContent = 'Upload Audio (.mp3 / .wav) from device';
+        }
+
+        function openEditProfile() {
+            const member = members.find(m => m.username === currentProfileUsername);
+            if (!member) return;
+
+            document.getElementById('edit-modal-title').textContent = `Edit @${member.username}`;
+            document.getElementById('edit-pin-input').value = '';
+            document.getElementById('edit-pin-msg').textContent = '';
+            document.getElementById('edit-pin-msg').className = 'edit-status-msg';
+            document.getElementById('edit-form-msg').textContent = '';
+            document.getElementById('edit-form-msg').className = 'edit-status-msg';
+
+            if (isAdminUnlocked) {
+                populateEditForm(member);
+                document.getElementById('edit-pin-step').style.display = 'none';
+                document.getElementById('edit-form-step').style.display = 'block';
+                document.getElementById('edit-profile-modal').classList.add('active');
+                return;
+            }
+
+            document.getElementById('edit-pin-step').style.display = 'block';
+            document.getElementById('edit-form-step').style.display = 'none';
+            document.getElementById('edit-profile-modal').classList.add('active');
+            setTimeout(() => document.getElementById('edit-pin-input').focus(), 50);
+        }
+
+        function closeEditProfile() {
+            document.getElementById('edit-profile-modal').classList.remove('active');
+        }
+
+        function verifyEditPin() {
+            const member = members.find(m => m.username === currentProfileUsername);
+            if (!member) return;
+
+            const entered = document.getElementById('edit-pin-input').value.trim();
+            const expected = member.pin || '1234';
+            const msgEl = document.getElementById('edit-pin-msg');
+
+            if (entered !== expected) {
+                msgEl.textContent = 'Incorrect PIN. Please try again.';
+                msgEl.className = 'edit-status-msg error';
+                return;
+            }
+
+            populateEditForm(member);
+
+            document.getElementById('edit-pin-step').style.display = 'none';
+            document.getElementById('edit-form-step').style.display = 'block';
+        }
+
+        function onPresetSelect(type, selectEl) {
+            if (!selectEl.value) return;
+            if (type === 'bg') {
+                document.getElementById('edit-bg-url').value = selectEl.value;
+            } else if (type === 'music') {
+                document.getElementById('edit-music-url').value = selectEl.value;
+                const selectedOpt = selectEl.options[selectEl.selectedIndex];
+                const title = selectedOpt.getAttribute('data-title') || '';
+                const artist = selectedOpt.getAttribute('data-artist') || '';
+                if (title) document.getElementById('edit-music-name').value = title;
+                if (artist) document.getElementById('edit-music-artist').value = artist;
+            }
+        }
+
+        const CLOUDINARY_CLOUD_NAME = 's8m2fhsp';
+        const CLOUDINARY_UPLOAD_PRESET = 'esse_uploads';
+
+        function handleFileUpload(type, inputEl) {
+            const file = inputEl.files[0];
+            if (!file) return;
+
+            const member = members.find(m => m.username === currentProfileUsername);
+            if (!member) return;
+
+            const msgEl = document.getElementById('edit-form-msg');
+            const labelText = document.getElementById(type === 'bg' ? 'edit-bg-upload-text' : 'edit-music-upload-text');
+            const saveBtn = document.getElementById('edit-save-btn');
+            const defaultLabel = type === 'bg' ? 'Upload Image / GIF from device' : 'Upload Audio (.mp3 / .wav) from device';
+
+            saveBtn.disabled = true;
+            msgEl.textContent = '';
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+            formData.append('folder', `profiles/${member.username}`);
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`);
+
+            xhr.upload.onprogress = (event) => {
+                if (event.lengthComputable) {
+                    const pct = Math.round((event.loaded / event.total) * 100);
+                    labelText.textContent = `Uploading... ${pct}%`;
+                }
+            };
+
+            xhr.onload = () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    const data = JSON.parse(xhr.responseText);
+                    const downloadUrl = data.secure_url;
+                    if (type === 'bg') {
+                        document.getElementById('edit-bg-url').value = downloadUrl;
+                        labelText.textContent = `Uploaded: ${file.name}`;
+                    } else {
+                        document.getElementById('edit-music-url').value = downloadUrl;
+                        labelText.textContent = `Uploaded: ${file.name}`;
+                        if (!document.getElementById('edit-music-name').value.trim()) {
+                            document.getElementById('edit-music-name').value = file.name.replace(/\.[^/.]+$/, '');
+                        }
+                    }
+                    msgEl.textContent = 'File uploaded! Click Save Changes to apply.';
+                    msgEl.className = 'edit-status-msg success';
+                } else {
+                    let errMsg = 'Upload failed.';
+                    try {
+                        const errData = JSON.parse(xhr.responseText);
+                        if (errData.error && errData.error.message) errMsg = errData.error.message;
+                    } catch (_) {}
+                    labelText.textContent = defaultLabel;
+                    msgEl.textContent = `Upload failed: ${errMsg}`;
+                    msgEl.className = 'edit-status-msg error';
+                }
+                saveBtn.disabled = false;
+            };
+
+            xhr.onerror = () => {
+                labelText.textContent = defaultLabel;
+                msgEl.textContent = 'Upload failed: network error.';
+                msgEl.className = 'edit-status-msg error';
+                saveBtn.disabled = false;
+            };
+
+            xhr.send(formData);
+        }
+
+        async function saveProfileChanges() {
+            const member = members.find(m => m.username === currentProfileUsername);
+            if (!member) return;
+
+            const saveBtn = document.getElementById('edit-save-btn');
+            const msgEl = document.getElementById('edit-form-msg');
+            saveBtn.disabled = true;
+            msgEl.textContent = 'Saving...';
+            msgEl.className = 'edit-status-msg';
+
+            const section = document.getElementById('edit-section').value || 'shinigami';
+            const updated = {
+                name: document.getElementById('edit-name').value.trim() || member.name,
+                section,
+                hideFromHof: section !== 'shinigami',
+                bio: document.getElementById('edit-bio').value.trim(),
+                background: document.getElementById('edit-bg-url').value.trim(),
+                backgroundMusicUrl: document.getElementById('edit-music-url').value.trim(),
+                backgroundMusicName: document.getElementById('edit-music-name').value.trim(),
+                backgroundMusicArtist: document.getElementById('edit-music-artist').value.trim()
+            };
+
+            try {
+                await db.collection('profiles').doc(member.username).set(updated, { merge: true });
+
+                Object.assign(member, updated);
+                applyMemberToOpenModal(member);
+                renderHallOfFame();
+                if (typeof window.FF === 'function') window.FF();
+
+                msgEl.textContent = 'Profile saved!';
+                msgEl.className = 'edit-status-msg success';
+                setTimeout(() => {
+                    closeEditProfile();
+                }, 700);
+            } catch (e) {
+                console.error('Error saving profile:', e);
+                msgEl.textContent = `Save failed: ${e.message}`;
+                msgEl.className = 'edit-status-msg error';
+            } finally {
+                saveBtn.disabled = false;
+            }
+        }
+
+        // Hidden Admin Panel Controls
+        const ADMIN_PASSWORD = 'esse2026';
+        let isAdminUnlocked = false;
+
+        function openAdminPanel() {
+            document.getElementById('admin-pin-input').value = '';
+            document.getElementById('admin-login-msg').textContent = '';
+            document.getElementById('admin-login-msg').className = 'edit-status-msg';
+            document.getElementById('admin-form-msg').textContent = '';
+            document.getElementById('admin-form-msg').className = 'edit-status-msg';
+            document.getElementById('admin-login-step').style.display = 'block';
+            document.getElementById('admin-dashboard-step').style.display = 'none';
+            document.getElementById('admin-modal').classList.add('active');
+            setTimeout(() => document.getElementById('admin-pin-input').focus(), 50);
+        }
+
+        function closeAdminPanel() {
+            document.getElementById('admin-modal').classList.remove('active');
+            if (window.location.hash === '#admin') {
+                history.pushState("", document.title, window.location.pathname + window.location.search);
+            }
+        }
+
+        function verifyAdminLogin() {
+            const entered = document.getElementById('admin-pin-input').value;
+            const msgEl = document.getElementById('admin-login-msg');
+            if (entered !== ADMIN_PASSWORD) {
+                msgEl.textContent = 'Incorrect Admin Password.';
+                msgEl.className = 'edit-status-msg error';
+                return;
+            }
+            isAdminUnlocked = true;
+            const editBtn = document.getElementById('modal-edit-btn');
+            if (editBtn) editBtn.style.display = 'inline-flex';
+            document.getElementById('admin-login-step').style.display = 'none';
+            document.getElementById('admin-dashboard-step').style.display = 'block';
+            renderAdminMembersList();
+        }
+
+        function renderAdminMembersList() {
+            const listEl = document.getElementById('admin-members-list');
+            listEl.innerHTML = '';
+            members.forEach(m => {
+                const row = document.createElement('div');
+                row.className = 'admin-member-row';
+
+                const info = document.createElement('div');
+                info.className = 'admin-member-info';
+                const title = document.createElement('strong');
+                title.textContent = `${m.name} (@${m.username})`;
+                const sub = document.createElement('span');
+                sub.className = 'admin-member-sub';
+                sub.textContent = `ID: ${m.discordId} | PIN: ${m.pin || '1234'}`;
+                info.appendChild(title);
+                info.appendChild(sub);
+
+                const actions = document.createElement('div');
+                actions.className = 'admin-member-actions';
+
+                const viewBtn = document.createElement('button');
+                viewBtn.type = 'button';
+                viewBtn.className = 'admin-mini-btn';
+                viewBtn.textContent = 'View';
+                viewBtn.onclick = () => {
+                    closeAdminPanel();
+                    openProfile(m.username);
+                };
+
+                const editBtn = document.createElement('button');
+                editBtn.type = 'button';
+                editBtn.className = 'admin-mini-btn';
+                editBtn.textContent = 'Edit';
+                editBtn.onclick = () => {
+                    closeAdminPanel();
+                    currentProfileUsername = m.username;
+                    openEditProfile();
+                };
+
+                const delBtn = document.createElement('button');
+                delBtn.type = 'button';
+                delBtn.className = 'admin-mini-btn danger';
+                delBtn.textContent = 'Delete';
+                delBtn.onclick = () => adminDeleteMember(m.username);
+
+                actions.appendChild(viewBtn);
+                actions.appendChild(editBtn);
+                actions.appendChild(delBtn);
+
+                row.appendChild(info);
+                row.appendChild(actions);
+                listEl.appendChild(row);
+            });
+        }
+
+        async function adminAddMember() {
+            const name = document.getElementById('admin-new-name').value.trim();
+            const username = document.getElementById('admin-new-username').value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
+            const discordId = document.getElementById('admin-new-discord').value.trim();
+            const pin = document.getElementById('admin-new-pin').value.trim() || '1234';
+            const bio = document.getElementById('admin-new-bio').value.trim() || 'Esse Member.';
+            const section = document.getElementById('admin-new-section').value || 'shinigami';
+            const hideFromHof = section !== 'shinigami';
+
+            const msgEl = document.getElementById('admin-form-msg');
+            const addBtn = document.getElementById('admin-add-btn');
+
+            if (!name || !username || !discordId) {
+                msgEl.textContent = 'Name, Username, and Discord ID are required.';
+                msgEl.className = 'edit-status-msg error';
+                return;
+            }
+
+            addBtn.disabled = true;
+            msgEl.textContent = 'Adding member...';
+            msgEl.className = 'edit-status-msg';
+
+            const newMember = {
+                name,
+                username,
+                pin,
+                discordId,
+                bio,
+                background: 'assets/zz.png',
+                backgroundMusicUrl: '',
+                backgroundMusicName: '',
+                backgroundMusicArtist: '',
+                section,
+                hideFromHof,
+                socials: {}
+            };
+
+            try {
+                await db.collection('profiles').doc(username).set(newMember, { merge: true });
+
+                const existingIdx = members.findIndex(m => m.username === username);
+                if (existingIdx >= 0) {
+                    members[existingIdx] = { ...members[existingIdx], ...newMember };
+                } else {
+                    members.push(newMember);
+                }
+
+                renderHallOfFame();
+                if (typeof window.FF === 'function') window.FF();
+                renderAdminMembersList();
+
+                document.getElementById('admin-new-name').value = '';
+                document.getElementById('admin-new-username').value = '';
+                document.getElementById('admin-new-discord').value = '';
+                document.getElementById('admin-new-bio').value = '';
+                document.getElementById('admin-new-section').value = 'shinigami';
+
+                msgEl.textContent = `Added @${username}!`;
+                msgEl.className = 'edit-status-msg success';
+            } catch (e) {
+                console.error('Error adding member:', e);
+                msgEl.textContent = `Failed: ${e.message}`;
+                msgEl.className = 'edit-status-msg error';
+            } finally {
+                addBtn.disabled = false;
+            }
+        }
+
+        async function adminDeleteMember(username) {
+            if (!confirm(`Delete @${username} from Firestore?`)) return;
+            const msgEl = document.getElementById('admin-form-msg');
+            try {
+                await db.collection('profiles').doc(username).delete();
+                const idx = members.findIndex(m => m.username === username);
+                if (idx >= 0) members.splice(idx, 1);
+                renderHallOfFame();
+                if (typeof window.FF === 'function') window.FF();
+                renderAdminMembersList();
+                msgEl.textContent = `Deleted @${username}.`;
+                msgEl.className = 'edit-status-msg success';
+            } catch (e) {
+                console.error('Error deleting member:', e);
+                msgEl.textContent = `Delete failed: ${e.message}`;
+                msgEl.className = 'edit-status-msg error';
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a') {
+                e.preventDefault();
+                openAdminPanel();
+            }
+        });
+
         loadTrack(0);
+        loadCustomProfilesFromFirestore();
         renderHallOfFame();
         setInterval(renderHallOfFame, 30000);
         setTimeout(checkStartupHash, 500);

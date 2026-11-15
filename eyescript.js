@@ -1,11 +1,11 @@
 const firebaseConfig = {
-  apiKey: "AIzaSyC3u1v8c37Yssin8-ZebWUBhS8wottPe18",
-  authDomain: "vyowir.firebaseapp.com",
-  projectId: "vyowir",
-  storageBucket: "vyowir.firebasestorage.app",
-  messagingSenderId: "66394206468",
-  appId: "1:66394206468:web:22c4bebf0c6d5da3ef2051",
-  measurementId: "G-CB5L1MXNQR"
+  apiKey: "AIzaSyCx-NxvglN36G5sxJte1dysIHLEsrw2OtM",
+  authDomain: "esse-2c2a1.firebaseapp.com",
+  projectId: "esse-2c2a1",
+  storageBucket: "esse-2c2a1.firebasestorage.app",
+  messagingSenderId: "406058800704",
+  appId: "1:406058800704:web:0d78ef7ff2ba64e7e5f1a5",
+  measurementId: "G-YFFM5FYYDH"
 };
 
 if (!firebase.apps.length) {

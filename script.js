@@ -1,18 +1,15 @@
-const d = {
-    "285061795029450754": "Francis",
-    "1294114074002718771": "qx_444",
-    "474567869519101953": "trevor",
-    "1213158954197327932": "quer",
-};
+const d = {};
 
-const r = {
-    "1294114074002718771": "qx_444",
-    "474567869519101953": "trevor",
-};
+const r = {};
 
 const GG = t => ['Playing', 'Streaming', 'Listening to', 'Watching', 'Custom Status:', 'Competing in'][t] || 'Playing';
 
 const UU = (i, m, s) => {
+    if (!i || i.length === 0) {
+        const container = document.querySelector(s);
+        if (container) container.innerHTML = '';
+        return;
+    }
     Promise.all(i.map(userId =>
         fetch(`https://api.lanyard.rest/v1/users/${userId}`)
             .then(response => {
@@ -92,11 +89,24 @@ const UU = (i, m, s) => {
                 }
 
 
+                const matchedMember = (typeof members !== 'undefined' && Array.isArray(members))
+                    ? members.find(mem => mem.discordId === userId || mem.username === (userName || '').toLowerCase())
+                    : null;
+                const displayName = matchedMember?.name || discord_user?.global_name || discord_user?.username || userName || `User ${userId}`;
+
+                if (!activityHtml) {
+                    activityHtml = `<div class="activity-details">${discord_status.charAt(0).toUpperCase() + discord_status.slice(1)}</div>`;
+                }
+
+                const popupHtml = `<div class="activity-details" style="font-weight:700; color:#fff; margin-bottom:4px;">${displayName}</div>${activityHtml}`;
+
                 return `<a href="${profileUrl}" ${clickHandler} class="trail-btn">
-                <img src="${avatarUrl}" alt="${discord_user?.username || userName || 'User'}'s Avatar">
-                ${discord_user?.username || userName || `User ID: ${userId}`}
-                <span class="status ${discord_status}"></span>
-                <div class="presence-popup">${activityHtml}</div>
+                <div class="trail-avatar-wrap">
+                    <img src="${avatarUrl}" alt="${displayName}'s Avatar">
+                    <span class="status ${discord_status}"></span>
+                </div>
+                <span class="trail-name">${displayName}</span>
+                <div class="presence-popup">${popupHtml}</div>
             </a>`;
             }).join('');
 
@@ -114,9 +124,11 @@ const UU = (i, m, s) => {
                 const html = i.map(userId => {
                     const userName = m[userId];
                     return `<a href="${userName ? `#${userName.toLowerCase()}` : `#`}" ${userName ? `onclick="event.preventDefault(); openProfile('${userName.toLowerCase()}')"` : ''} class="trail-btn">
-                    <img src="https://cdn.discordapp.com/embed/avatars/0.png" alt="${userName || 'User'}'s Avatar">
-                    ${userName || `User ID: ${userId}`}
-                    <span class="status offline"></span>
+                    <div class="trail-avatar-wrap">
+                        <img src="https://cdn.discordapp.com/embed/avatars/0.png" alt="${userName || 'User'}'s Avatar">
+                        <span class="status offline"></span>
+                    </div>
+                    <span class="trail-name">${userName || `User ${userId}`}</span>
                     <div class="presence-popup">Could not load status</div>
                 </a>`;
                 }).join('');
@@ -128,19 +140,30 @@ const UU = (i, m, s) => {
 };
 
 const FF = () => {
-    const dKeys = Object.keys(d);
-    const rKeys = Object.keys(r);
+    const ogMap = { ...d };
+    const membersMap = { ...r };
 
-    UU(dKeys, d, '.button-trail-left');
-    UU(rKeys, r, '.button-trail-right');
+    if (typeof members !== 'undefined' && Array.isArray(members)) {
+        members.forEach(m => {
+            if (m.section === 'og' && m.discordId) {
+                ogMap[m.discordId] = m.username;
+            } else if (m.section === 'members' && m.discordId) {
+                membersMap[m.discordId] = m.username;
+            }
+        });
+    }
+
+    UU(Object.keys(ogMap), ogMap, '.button-trail-left');
+    UU(Object.keys(membersMap), membersMap, '.button-trail-right');
 };
+window.FF = FF;
 
 const EE = () => {
     const b = document.getElementById('background-music');
     const t = document.getElementById('music-toggle');
 
     if (b) {
-        b.volume = 0.5;
+        b.volume = 0.3;
     } else {
         console.error("Background music element not found.");
     }

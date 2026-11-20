@@ -11,11 +11,13 @@
 </head>
 
 <body>
-    <!-- Welcome Gate Screen -->
+    <!-- Welcome Gate Splash Screen -->
     <div id="welcome-overlay">
+        <img src="assets/zz.png" class="splash-logo" draggable="false" alt="Esse Logo">
         <h1 class="welcome-title">Welcome to Esse</h1>
         <p class="welcome-subtitle">Click anywhere to enter</p>
     </div>
+    <div id="intro-flash"></div>
 
     <!-- Animated Particle Canvas Background -->
     <canvas id="bg-canvas"></canvas>
@@ -23,7 +25,16 @@
     <!-- Fallback Background Image -->
     <img id="bg-image" src="assets/main-page5.gif" draggable="false" alt="Background">
 
-    <section class="main-container">
+    <!-- Top Navigation Bar -->
+    <nav class="top-nav">
+        <a href="#" class="top-nav-brand" onclick="switchView('home'); return false;">esse</a>
+        <div class="top-nav-links">
+            <a href="#" id="nav-home" class="top-nav-link active" onclick="switchView('home'); return false;">HOME</a>
+            <a href="#gallery" id="nav-gallery" class="top-nav-link" onclick="switchView('gallery'); return false;">GALLERY</a>
+        </div>
+    </nav>
+
+    <section class="main-container" id="home-view">
         <!-- Logo -->
         <img src="assets/zz.png" class="main-logo" draggable="false" alt="Logo">
 
@@ -57,8 +68,122 @@
                 <h1>Members</h1>
             </div>
             <div class="button-trail-right" id="extra-members-list"></div>
+
+            <!-- Discord Server Widget Card -->
+            <div class="discord-server-card" id="discord-server-card">
+                <div class="discord-card-header">
+                    <img id="discord-server-icon" src="assets/zz.png" alt="Server Icon" class="discord-server-icon">
+                    <div class="discord-server-title-wrap">
+                        <h2 id="discord-server-name">ESSE GARAPUTAS</h2>
+                        <span class="discord-server-subtitle">Discord Server</span>
+                    </div>
+                </div>
+
+                <div class="discord-stats-rows">
+                    <div class="discord-stat-row">
+                        <span class="discord-stat-label">ONLINE NOW</span>
+                        <span class="discord-stat-value"><span class="discord-dot-live"></span> <span id="discord-online-count">--</span></span>
+                    </div>
+                    <div class="discord-stat-row">
+                        <span class="discord-stat-label">MEMBERS</span>
+                        <span class="discord-stat-value" id="discord-total-count">--</span>
+                    </div>
+                </div>
+
+                <div class="discord-card-toolbar">
+                    <span class="discord-tab-active">ONLINE MEMBERS</span>
+                    <input type="text" id="discord-member-search" class="discord-search-input" placeholder="Search members...">
+                </div>
+
+                <div id="discord-members-grid" class="discord-members-grid">
+                    <div class="discord-loading">Loading Discord members...</div>
+                </div>
+
+                <div id="discord-more-note" class="discord-more-note"></div>
+            </div>
         </section>
     </section>
+
+    <!-- Gallery View -->
+    <section id="gallery-view" class="gallery-view" style="display: none;">
+        <div class="gallery-toolbar">
+            <div class="gallery-filters">
+                <button type="button" class="gallery-filter-btn active" data-filter="all" onclick="setGalleryFilter('all')">
+                    ALL <sup id="gallery-count-all">0</sup>
+                </button>
+                <button type="button" class="gallery-filter-btn" data-filter="video" onclick="setGalleryFilter('video')">
+                    VIDEOS <sup id="gallery-count-video">0</sup>
+                </button>
+                <button type="button" class="gallery-filter-btn" data-filter="image" onclick="setGalleryFilter('image')">
+                    IMAGES <sup id="gallery-count-image">0</sup>
+                </button>
+            </div>
+            <button type="button" class="gallery-upload-open-btn" onclick="openGalleryUploadModal()">
+                <i class='bx bx-plus'></i> Upload
+            </button>
+        </div>
+
+        <div id="gallery-grid" class="gallery-grid">
+            <div class="discord-loading">Loading gallery...</div>
+        </div>
+    </section>
+
+    <!-- Gallery Lightbox Modal -->
+    <div id="gallery-lightbox" class="gallery-lightbox" onclick="if(event.target===this) closeGalleryLightbox();">
+        <button type="button" class="gallery-lightbox-close" onclick="closeGalleryLightbox()">&times;</button>
+        <div class="gallery-lightbox-inner" id="gallery-lightbox-content"></div>
+        <div class="gallery-lightbox-caption" id="gallery-lightbox-caption"></div>
+    </div>
+
+    <!-- Gallery Upload Modal -->
+    <div id="gallery-upload-modal" class="edit-profile-modal">
+        <div class="edit-modal-card">
+            <div class="edit-modal-header">
+                <h3>Upload to Gallery</h3>
+                <button type="button" class="edit-close-btn" onclick="closeGalleryUploadModal()">&times;</button>
+            </div>
+
+            <div id="gallery-pin-step">
+                <div class="edit-field">
+                    <label for="gallery-pin-input">Admin Password</label>
+                    <input type="password" id="gallery-pin-input" placeholder="Enter Admin Password" onkeydown="if(event.key==='Enter') verifyGalleryPin();">
+                </div>
+                <button type="button" class="edit-btn-primary" onclick="verifyGalleryPin()">Unlock</button>
+                <div id="gallery-pin-msg" class="edit-status-msg"></div>
+            </div>
+
+            <div id="gallery-form-step" style="display: none;">
+                <div class="edit-field">
+                    <label for="gallery-caption">Caption / Name (optional)</label>
+                    <input type="text" id="gallery-caption" placeholder="e.g. KWATRO">
+                </div>
+
+                <div class="edit-field">
+                    <label>Upload Image, GIF, or Video</label>
+                    <label class="edit-upload-label">
+                        <i class='bx bx-cloud-upload'></i> <span id="gallery-upload-text">Choose image or video from device</span>
+                        <input type="file" id="gallery-file-input" accept="image/*,video/*" onchange="handleGalleryFileUpload(this)">
+                    </label>
+                </div>
+
+                <div class="edit-field">
+                    <label for="gallery-media-url">Or paste Media URL</label>
+                    <input type="url" id="gallery-media-url" placeholder="https://...">
+                </div>
+
+                <div class="edit-field">
+                    <label for="gallery-media-type">Type</label>
+                    <select id="gallery-media-type">
+                        <option value="image">Image / GIF</option>
+                        <option value="video">Video</option>
+                    </select>
+                </div>
+
+                <button type="button" id="gallery-save-btn" class="edit-btn-primary" onclick="saveGalleryItem()">Add to Gallery</button>
+                <div id="gallery-form-msg" class="edit-status-msg"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- Global Floating Music Player -->
     <section class="music-player">
@@ -863,10 +988,14 @@
             const hash = window.location.hash.substring(1);
             if (hash === 'admin') {
                 openAdminPanel();
+            } else if (hash === 'gallery') {
+                switchView('gallery', false);
             } else if (hash) {
+                switchView('home', false);
                 openProfile(hash);
             } else {
                 closeProfile();
+                switchView('home', false);
             }
         });
 
@@ -895,13 +1024,17 @@
         const trackArtist = document.getElementById('track-artist');
         const trackArtwork = document.getElementById('track-artwork');
 
-        // Welcome Gate Overlay Fade Handler (Audio starts on click)
+        // Welcome Gate Splash Pop-Flash Handler (Audio starts on click)
         const welcomeOverlay = document.getElementById('welcome-overlay');
+        const introFlash = document.getElementById('intro-flash');
         welcomeOverlay.addEventListener('click', () => {
-            welcomeOverlay.classList.add('fade-out');
+            if (welcomeOverlay.classList.contains('fade-out')) return;
+            if (introFlash) introFlash.classList.add('active');
+            welcomeOverlay.classList.add('pop-flash', 'fade-out');
             setTimeout(() => {
                 welcomeOverlay.style.display = 'none';
-            }, 1000);
+                if (introFlash) introFlash.style.display = 'none';
+            }, 750);
 
             isPlaying = true;
             audio.play().then(() => {
@@ -977,6 +1110,8 @@
             const hash = window.location.hash.substring(1);
             if (hash === 'admin') {
                 openAdminPanel();
+            } else if (hash === 'gallery') {
+                switchView('gallery', false);
             } else if (hash) {
                 openProfile(hash);
             }
@@ -1442,6 +1577,309 @@
                 openAdminPanel();
             }
         });
+
+        // Gallery View & Lightbox Controls
+        let galleryItems = [];
+        let galleryFilter = 'all';
+
+        function switchView(view, updateHash = true) {
+            const homeView = document.getElementById('home-view');
+            const galleryView = document.getElementById('gallery-view');
+            const navHome = document.getElementById('nav-home');
+            const navGallery = document.getElementById('nav-gallery');
+
+            if (view === 'gallery') {
+                if (homeView) homeView.style.display = 'none';
+                if (galleryView) galleryView.style.display = 'block';
+                if (navHome) navHome.classList.remove('active');
+                if (navGallery) navGallery.classList.add('active');
+                if (updateHash) window.location.hash = 'gallery';
+                loadGalleryFromFirestore();
+            } else {
+                if (homeView) homeView.style.display = 'flex';
+                if (galleryView) galleryView.style.display = 'none';
+                if (navHome) navHome.classList.add('active');
+                if (navGallery) navGallery.classList.remove('active');
+                if (updateHash && window.location.hash === '#gallery') {
+                    history.pushState("", document.title, window.location.pathname + window.location.search);
+                }
+            }
+        }
+
+        function setGalleryFilter(filter) {
+            galleryFilter = filter;
+            document.querySelectorAll('.gallery-filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-filter') === filter);
+            });
+            renderGalleryGrid();
+        }
+
+        async function loadGalleryFromFirestore() {
+            if (typeof db === 'undefined') return;
+            try {
+                const snap = await db.collection('gallery').orderBy('createdAt', 'desc').get();
+                galleryItems = [];
+                snap.forEach(doc => {
+                    galleryItems.push({ id: doc.id, ...doc.data() });
+                });
+                updateGalleryCounts();
+                renderGalleryGrid();
+            } catch (e) {
+                console.warn('Could not load gallery:', e);
+                const grid = document.getElementById('gallery-grid');
+                if (grid) grid.innerHTML = '<div class="discord-loading">No gallery items yet.</div>';
+            }
+        }
+
+        function updateGalleryCounts() {
+            const allCount = galleryItems.length;
+            const videoCount = galleryItems.filter(i => i.type === 'video').length;
+            const imageCount = galleryItems.filter(i => i.type !== 'video').length;
+
+            const allEl = document.getElementById('gallery-count-all');
+            const vidEl = document.getElementById('gallery-count-video');
+            const imgEl = document.getElementById('gallery-count-image');
+            if (allEl) allEl.textContent = allCount;
+            if (vidEl) vidEl.textContent = videoCount;
+            if (imgEl) imgEl.textContent = imageCount;
+        }
+
+        function renderGalleryGrid() {
+            const grid = document.getElementById('gallery-grid');
+            if (!grid) return;
+
+            const filtered = galleryItems.filter(item => {
+                if (galleryFilter === 'video') return item.type === 'video';
+                if (galleryFilter === 'image') return item.type !== 'video';
+                return true;
+            });
+
+            grid.innerHTML = '';
+
+            if (filtered.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'discord-loading';
+                empty.textContent = 'No items in this category yet.';
+                grid.appendChild(empty);
+                return;
+            }
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'gallery-card';
+
+                const mediaWrap = document.createElement('div');
+                mediaWrap.className = 'gallery-media-wrap';
+                mediaWrap.onclick = () => openGalleryLightbox(item);
+
+                if (item.type === 'video') {
+                    const vid = document.createElement('video');
+                    vid.src = item.url;
+                    vid.muted = true;
+                    vid.preload = 'metadata';
+                    mediaWrap.appendChild(vid);
+
+                    const badge = document.createElement('div');
+                    badge.className = 'gallery-play-badge';
+                    badge.innerHTML = "<i class='bx bx-play'></i>";
+                    mediaWrap.appendChild(badge);
+                } else {
+                    const img = document.createElement('img');
+                    img.src = item.url;
+                    img.alt = item.caption || 'Gallery item';
+                    img.loading = 'lazy';
+                    mediaWrap.appendChild(img);
+                }
+
+                const delBtn = document.createElement('button');
+                delBtn.type = 'button';
+                delBtn.className = `gallery-delete-btn ${isAdminUnlocked ? 'admin-visible' : ''}`;
+                delBtn.innerHTML = "<i class='bx bx-trash'></i>";
+                delBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    deleteGalleryItem(item.id);
+                };
+                mediaWrap.appendChild(delBtn);
+
+                card.appendChild(mediaWrap);
+
+                if (item.caption) {
+                    const cap = document.createElement('div');
+                    cap.className = 'gallery-caption';
+                    cap.textContent = item.caption;
+                    card.appendChild(cap);
+                }
+
+                grid.appendChild(card);
+            });
+        }
+
+        function openGalleryLightbox(item) {
+            const box = document.getElementById('gallery-lightbox');
+            const inner = document.getElementById('gallery-lightbox-content');
+            const cap = document.getElementById('gallery-lightbox-caption');
+            if (!box || !inner) return;
+
+            inner.innerHTML = '';
+            if (item.type === 'video') {
+                const vid = document.createElement('video');
+                vid.src = item.url;
+                vid.controls = true;
+                vid.autoplay = true;
+                inner.appendChild(vid);
+            } else {
+                const img = document.createElement('img');
+                img.src = item.url;
+                img.alt = item.caption || 'Gallery item';
+                inner.appendChild(img);
+            }
+
+            if (cap) cap.textContent = item.caption || '';
+            box.classList.add('active');
+        }
+
+        function closeGalleryLightbox() {
+            const box = document.getElementById('gallery-lightbox');
+            const inner = document.getElementById('gallery-lightbox-content');
+            if (inner) inner.innerHTML = '';
+            if (box) box.classList.remove('active');
+        }
+
+        function openGalleryUploadModal() {
+            document.getElementById('gallery-pin-input').value = '';
+            document.getElementById('gallery-pin-msg').textContent = '';
+            document.getElementById('gallery-form-msg').textContent = '';
+            document.getElementById('gallery-caption').value = '';
+            document.getElementById('gallery-media-url').value = '';
+            document.getElementById('gallery-media-type').value = 'image';
+            document.getElementById('gallery-upload-text').textContent = 'Choose image or video from device';
+
+            if (isAdminUnlocked) {
+                document.getElementById('gallery-pin-step').style.display = 'none';
+                document.getElementById('gallery-form-step').style.display = 'block';
+            } else {
+                document.getElementById('gallery-pin-step').style.display = 'block';
+                document.getElementById('gallery-form-step').style.display = 'none';
+            }
+
+            document.getElementById('gallery-upload-modal').classList.add('active');
+        }
+
+        function closeGalleryUploadModal() {
+            document.getElementById('gallery-upload-modal').classList.remove('active');
+        }
+
+        function verifyGalleryPin() {
+            const entered = document.getElementById('gallery-pin-input').value;
+            const msgEl = document.getElementById('gallery-pin-msg');
+            if (entered !== ADMIN_PASSWORD) {
+                msgEl.textContent = 'Incorrect Admin Password.';
+                msgEl.className = 'edit-status-msg error';
+                return;
+            }
+            isAdminUnlocked = true;
+            document.getElementById('gallery-pin-step').style.display = 'none';
+            document.getElementById('gallery-form-step').style.display = 'block';
+            renderGalleryGrid();
+        }
+
+        function handleGalleryFileUpload(inputEl) {
+            const file = inputEl.files[0];
+            if (!file) return;
+
+            const labelText = document.getElementById('gallery-upload-text');
+            const msgEl = document.getElementById('gallery-form-msg');
+            const saveBtn = document.getElementById('gallery-save-btn');
+            const isVideo = file.type.startsWith('video/');
+
+            document.getElementById('gallery-media-type').value = isVideo ? 'video' : 'image';
+            saveBtn.disabled = true;
+            msgEl.textContent = '';
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+            formData.append('folder', 'gallery');
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`);
+
+            xhr.upload.onprogress = (event) => {
+                if (event.lengthComputable) {
+                    const pct = Math.round((event.loaded / event.total) * 100);
+                    labelText.textContent = `Uploading... ${pct}%`;
+                }
+            };
+
+            xhr.onload = () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    const data = JSON.parse(xhr.responseText);
+                    document.getElementById('gallery-media-url').value = data.secure_url;
+                    labelText.textContent = `Uploaded: ${file.name}`;
+                    msgEl.textContent = 'Uploaded! Click Add to Gallery.';
+                    msgEl.className = 'edit-status-msg success';
+                } else {
+                    labelText.textContent = 'Choose image or video from device';
+                    msgEl.textContent = 'Upload failed.';
+                    msgEl.className = 'edit-status-msg error';
+                }
+                saveBtn.disabled = false;
+            };
+
+            xhr.onerror = () => {
+                labelText.textContent = 'Choose image or video from device';
+                msgEl.textContent = 'Upload failed: network error.';
+                msgEl.className = 'edit-status-msg error';
+                saveBtn.disabled = false;
+            };
+
+            xhr.send(formData);
+        }
+
+        async function saveGalleryItem() {
+            const url = document.getElementById('gallery-media-url').value.trim();
+            const type = document.getElementById('gallery-media-type').value;
+            const caption = document.getElementById('gallery-caption').value.trim();
+            const msgEl = document.getElementById('gallery-form-msg');
+            const saveBtn = document.getElementById('gallery-save-btn');
+
+            if (!url) {
+                msgEl.textContent = 'Please upload a file or paste a media URL.';
+                msgEl.className = 'edit-status-msg error';
+                return;
+            }
+
+            saveBtn.disabled = true;
+            msgEl.textContent = 'Saving...';
+            msgEl.className = 'edit-status-msg';
+
+            try {
+                await db.collection('gallery').add({
+                    url,
+                    type,
+                    caption,
+                    createdAt: Date.now()
+                });
+                await loadGalleryFromFirestore();
+                closeGalleryUploadModal();
+            } catch (e) {
+                console.error('Gallery save failed:', e);
+                msgEl.textContent = `Save failed: ${e.message}`;
+                msgEl.className = 'edit-status-msg error';
+            } finally {
+                saveBtn.disabled = false;
+            }
+        }
+
+        async function deleteGalleryItem(id) {
+            if (!confirm('Delete this item from Gallery?')) return;
+            try {
+                await db.collection('gallery').doc(id).delete();
+                await loadGalleryFromFirestore();
+            } catch (e) {
+                console.error('Gallery delete failed:', e);
+            }
+        }
 
         loadTrack(0);
         loadCustomProfilesFromFirestore();

@@ -184,8 +184,128 @@ const EE = () => {
     }
 };
 
+const DISCORD_GUILD_ID = '1512180057894817832';
+let discordWidgetMembers = [];
+
+function renderDiscordMembersGrid(filterText = '') {
+    const grid = document.getElementById('discord-members-grid');
+    if (!grid) return;
+
+    const query = filterText.trim().toLowerCase();
+    const list = query
+        ? discordWidgetMembers.filter(m => (m.username || '').toLowerCase().includes(query))
+        : discordWidgetMembers;
+
+    grid.innerHTML = '';
+
+    if (list.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'discord-loading';
+        empty.textContent = query ? 'No matching online members.' : 'No online members right now.';
+        grid.appendChild(empty);
+        return;
+    }
+
+    list.forEach(m => {
+        const tile = document.createElement('div');
+        tile.className = 'discord-member-tile';
+        if (m.game && m.game.name) {
+            tile.title = `Playing ${m.game.name}`;
+        }
+
+        const wrap = document.createElement('div');
+        wrap.className = 'discord-member-avatar-wrap';
+
+        const img = document.createElement('img');
+        img.className = 'discord-member-avatar';
+        img.src = m.avatar_url || 'https://cdn.discordapp.com/embed/avatars/0.png';
+        img.alt = m.username || 'Member';
+        img.loading = 'lazy';
+
+        const statusDot = document.createElement('span');
+        statusDot.className = `discord-member-status ${m.status || 'offline'}`;
+
+        wrap.appendChild(img);
+        wrap.appendChild(statusDot);
+
+        const nameEl = document.createElement('span');
+        nameEl.className = 'discord-member-username';
+        nameEl.textContent = m.username || 'Member';
+
+        tile.appendChild(wrap);
+        tile.appendChild(nameEl);
+
+        if (m.game && m.game.name) {
+            const gameEl = document.createElement('span');
+            gameEl.className = 'discord-member-game';
+            gameEl.textContent = m.game.name;
+            tile.appendChild(gameEl);
+        }
+
+        grid.appendChild(tile);
+    });
+}
+
+async function loadDiscordWidget() {
+    try {
+        const res = await fetch(`https://discord.com/api/guilds/${DISCORD_GUILD_ID}/widget.json`);
+        if (!res.ok) throw new Error(`Widget status ${res.status}`);
+        const data = await res.json();
+
+        const nameEl = document.getElementById('discord-server-name');
+        const onlineEl = document.getElementById('discord-online-count');
+        const moreNote = document.getElementById('discord-more-note');
+
+        if (nameEl && data.name) nameEl.textContent = data.name;
+        if (onlineEl) onlineEl.textContent = data.presence_count ?? (data.members ? data.members.length : 0);
+
+        discordWidgetMembers = Array.isArray(data.members) ? data.members : [];
+        const searchEl = document.getElementById('discord-member-search');
+        renderDiscordMembersGrid(searchEl ? searchEl.value : '');
+
+        if (moreNote) {
+            const extra = (data.presence_count || 0) - discordWidgetMembers.length;
+            moreNote.textContent = extra > 0 ? `+${extra} more online` : '';
+        }
+
+        if (data.instant_invite) {
+            const code = data.instant_invite.split('/').pop();
+            if (code) {
+                fetch(`https://discord.com/api/v10/invites/${code}?with_counts=true`)
+                    .then(r => r.ok ? r.json() : null)
+                    .then(inv => {
+                        if (!inv) return;
+                        const totalEl = document.getElementById('discord-total-count');
+                        if (totalEl && inv.approximate_member_count !== undefined) {
+                            totalEl.textContent = inv.approximate_member_count;
+                        }
+                        const iconEl = document.getElementById('discord-server-icon');
+                        if (iconEl && inv.guild && inv.guild.icon) {
+                            const ext = inv.guild.icon.startsWith('a_') ? 'gif' : 'png';
+                            iconEl.src = `https://cdn.discordapp.com/icons/${inv.guild.id}/${inv.guild.icon}.${ext}?size=128`;
+                        }
+                    })
+                    .catch(() => {});
+            }
+        }
+    } catch (e) {
+        console.warn('Could not load Discord widget:', e);
+        const grid = document.getElementById('discord-members-grid');
+        if (grid) {
+            grid.innerHTML = '<div class="discord-loading">Could not load Discord widget.</div>';
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     EE();
     FF();
     setInterval(FF, 10000);
+
+    const searchInput = document.getElementById('discord-member-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => renderDiscordMembersGrid(e.target.value));
+    }
+    loadDiscordWidget();
+    setInterval(loadDiscordWidget, 60000);
 });

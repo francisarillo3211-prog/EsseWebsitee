@@ -1,0 +1,9 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/.netlify/functions/:fn",
+      "destination": "/api/:fn"
+    }
+  ]
+}

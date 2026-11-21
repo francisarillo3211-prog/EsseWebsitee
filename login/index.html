@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../assets/z.png">
+    <title>Admin Login — @Esse</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px 80px;
+        }
+
+        .login-shell {
+            width: 100%;
+            max-width: 680px;
+            z-index: 10;
+        }
+
+        .login-card {
+            background: rgba(10, 10, 10, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 18px;
+            padding: 30px;
+            color: #fff;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
+        }
+
+        .login-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .login-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .login-header-left img {
+            width: 34px;
+            height: 34px;
+            object-fit: contain;
+        }
+
+        .login-header h1 {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            margin: 0;
+            letter-spacing: 0.06em;
+        }
+
+        .back-site-link {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+        }
+
+        .back-site-link:hover {
+            color: #fff;
+            border-bottom-color: #fff;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 18px;
+            margin-bottom: 22px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .admin-tab-btn {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            padding: 8px 2px 10px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+        }
+
+        .admin-tab-btn.active,
+        .admin-tab-btn:hover {
+            color: #fff;
+        }
+
+        .admin-tab-btn.active {
+            border-bottom-color: #fff;
+        }
+
+        .admin-gallery-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .admin-gallery-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #111;
+            aspect-ratio: 16 / 10;
+        }
+
+        .admin-gallery-item img,
+        .admin-gallery-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .admin-gallery-del {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 107, 107, 0.5);
+            color: #ff6b6b;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .key-filter-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .key-filter-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: rgba(255, 255, 255, 0.7);
+            border-radius: 999px;
+            padding: 5px 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+        }
+
+        .key-filter-btn.active {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+        }
+
+        .key-status-badge {
+            display: inline-block;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 2px 8px;
+            border-radius: 999px;
+            margin-left: 6px;
+        }
+
+        .key-status-badge.ongoing {
+            background: rgba(81, 207, 102, 0.16);
+            color: #51cf66;
+            border: 1px solid rgba(81, 207, 102, 0.35);
+        }
+
+        .key-status-badge.expired {
+            background: rgba(255, 107, 107, 0.16);
+            color: #ff6b6b;
+            border: 1px solid rgba(255, 107, 107, 0.35);
+        }
+
+        .key-status-badge.revoked {
+            background: rgba(255, 169, 77, 0.16);
+            color: #ffa94d;
+            border: 1px solid rgba(255, 169, 77, 0.35);
+        }
+    </style>
+</head>
+
+<body>
+    <img id="bg-image" src="../assets/main-page5.gif" draggable="false" alt="Background">
+
+    <main class="login-shell">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-header-left">
+                    <img src="../assets/zz.png" alt="Esse">
+                    <h1>Admin Portal</h1>
+                </div>
+                <a href="/" class="back-site-link">← Back to Site</a>
+            </div>
+
+            <!-- Login Step -->
+            <div id="login-step">
+                <div class="edit-field">
+                    <label for="admin-pass-input">Admin Password</label>
+                    <input type="password" id="admin-pass-input" placeholder="Enter Admin Password" autofocus
+                        onkeydown="if(event.key==='Enter') handleAdminLogin();">
+                </div>
+                <button type="button" class="edit-btn-primary" onclick="handleAdminLogin()">Login</button>
+                <div id="login-msg" class="edit-status-msg"></div>
+            </div>
+
+            <!-- Dashboard Step -->
+            <div id="dashboard-step" style="display: none;">
+                <div class="admin-tabs">
+                    <button type="button" class="admin-tab-btn active" data-tab="members"
+                        onclick="switchAdminTab('members')">Members</button>
+                    <button type="button" class="admin-tab-btn" data-tab="gallery"
+                        onclick="switchAdminTab('gallery')">Gallery</button>
+                    <button type="button" class="admin-tab-btn" data-tab="keys"
+                        onclick="switchAdminTab('keys')">Keys</button>
+                    <button type="button" class="admin-tab-btn" data-tab="keylist"
+                        onclick="switchAdminTab('keylist')">Key List</button>
+                </div>
+
+                <!-- Members Tab -->
+                <div id="tab-members">
+                    <div class="edit-two-col">
+                        <div class="edit-field">
+                            <label for="new-name">Display Name *</label>
+                            <input type="text" id="new-name" placeholder="e.g. Alex">
+                        </div>
+                        <div class="edit-field">
+                            <label for="new-username">Username * (no spaces)</label>
+                            <input type="text" id="new-username" placeholder="e.g. alex">
+                        </div>
+                    </div>
+
+                    <div class="edit-two-col">
+                        <div class="edit-field">
+                            <label for="new-discord">Discord User ID *</label>
+                            <input type="text" id="new-discord" placeholder="e.g. 123456789012345678">
+                        </div>
+                        <div class="edit-field">
+                            <label for="new-pin">Member Edit PIN</label>
+                            <input type="text" id="new-pin" value="1234" placeholder="1234">
+                        </div>
+                    </div>
+
+                    <div class="edit-two-col">
+                        <div class="edit-field">
+                            <label for="new-bio">Bio</label>
+                            <input type="text" id="new-bio" placeholder="Esse Member.">
+                        </div>
+                        <div class="edit-field">
+                            <label for="new-section">Section</label>
+                            <select id="new-section">
+                                <option value="founder">Founder</option>
+                                <option value="shinigami">Shinigami</option>
+                                <option value="og">OG</option>
+                                <option value="members">Members</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="button" id="add-member-btn" class="edit-btn-primary" onclick="addMember()">+ Add
+                        Member</button>
+                    <div id="member-msg" class="edit-status-msg"></div>
+
+                    <div style="margin-top: 22px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08);">
+                        <label
+                            style="display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.08em; color:rgba(255,255,255,0.65); margin-bottom:10px;">Current
+                            Members</label>
+                        <div id="members-list" class="admin-members-list"></div>
+                    </div>
+                </div>
+
+                <!-- Gallery Tab -->
+                <div id="tab-gallery" style="display: none;">
+                    <div class="edit-field">
+                        <label for="gal-caption">Caption / Name (optional)</label>
+                        <input type="text" id="gal-caption" placeholder="e.g. KWATRO">
+                    </div>
+
+                    <div class="edit-field">
+                        <label>Upload Image, GIF, or Video</label>
+                        <label class="edit-upload-label">
+                            <i class='bx bx-cloud-upload'></i> <span id="gal-upload-text">Choose image or video from
+                                device</span>
+                            <input type="file" id="gal-file" accept="image/*,video/*"
+                                onchange="uploadToCloudinary('gallery', this)">
+                        </label>
+                    </div>
+
+                    <div class="edit-two-col">
+                        <div class="edit-field">
+                            <label for="gal-url">Media URL</label>
+                            <input type="url" id="gal-url" placeholder="https://...">
+                        </div>
+                        <div class="edit-field">
+                            <label for="gal-type">Type</label>
+                            <select id="gal-type">
+                                <option value="image">Image / GIF</option>
+                                <option value="video">Video</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="button" id="gal-save-btn" class="edit-btn-primary" onclick="saveGallery()">Add to
+                        Gallery</button>
+                    <div id="gal-msg" class="edit-status-msg"></div>
+
+                    <div id="gal-list" class="admin-gallery-list"></div>
+                </div>
+
+                <!-- Keys Tab -->
+                <div id="tab-keys" style="display: none;">
+                    <div class="edit-two-col">
+                        <div class="edit-field">
+                            <label for="key-duration">Key Duration</label>
+                            <select id="key-duration">
+                                <option value="1d">1 Day</option>
+                                <option value="3d">3 Days</option>
+                                <option value="7d">7 Days</option>
+                                <option value="15d">15 Days</option>
+                                <option value="30d">30 Days</option>
+                                <option value="lifetime">Lifetime</option>
+                            </select>
+                        </div>
+                        <div class="edit-field">
+                            <label for="key-note">Note / Buyer (optional)</label>
+                            <input type="text" id="key-note" placeholder="e.g. Alex">
+                        </div>
+                    </div>
+
+                    <button type="button" id="gen-key-btn" class="edit-btn-primary"
+                        onclick="generateLicenseKey()">Generate Key</button>
+                    <div id="key-gen-msg" class="edit-status-msg"></div>
+
+                    <div id="generated-key-box"
+                        style="display: none; margin-top: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.16); border-radius: 10px; padding: 14px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                            <code id="generated-key-text"
+                                style="font-size: 0.95rem; font-weight: 700; color: #51cf66; word-break: break-all;"></code>
+                            <button type="button" class="admin-mini-btn" onclick="copyGeneratedKey()">Copy</button>
+                        </div>
+                        <div id="generated-key-exp"
+                            style="font-size: 0.75rem; color: rgba(255,255,255,0.55); margin-top: 6px;"></div>
+                    </div>
+
+                    <div style="margin-top: 22px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08);">
+                        <div class="edit-two-col">
+                            <div class="edit-field">
+                                <label for="test-key-input">Verify / Test a Key</label>
+                                <input type="text" id="test-key-input" placeholder="ESSE-...">
+                            </div>
+                            <div class="edit-field">
+                                <label for="test-hwid-input">Machine HWID</label>
+                                <input type="text" id="test-hwid-input" placeholder="e.g. TEST-PC-01">
+                            </div>
+                        </div>
+                        <button type="button" class="admin-mini-btn" style="padding: 8px 16px;"
+                            onclick="verifyTestKey()">Test Key</button>
+                        <div id="test-key-msg" class="edit-status-msg"></div>
+                    </div>
+                </div>
+
+                <!-- Key List Tab -->
+                <div id="tab-keylist" style="display: none;">
+                    <div class="key-filter-row">
+                        <button type="button" class="key-filter-btn active" data-kfilter="all" onclick="setKeyFilter('all')">All (<span id="kcount-all">0</span>)</button>
+                        <button type="button" class="key-filter-btn" data-kfilter="ongoing" onclick="setKeyFilter('ongoing')">Ongoing (<span id="kcount-ongoing">0</span>)</button>
+                        <button type="button" class="key-filter-btn" data-kfilter="expired" onclick="setKeyFilter('expired')">Expired (<span id="kcount-expired">0</span>)</button>
+                        <button type="button" class="key-filter-btn" data-kfilter="revoked" onclick="setKeyFilter('revoked')">Revoked (<span id="kcount-revoked">0</span>)</button>
+                    </div>
+                    <div id="keys-list-container" class="admin-members-list" style="max-height: 360px;"></div>
+                    <div id="keylist-msg" class="edit-status-msg"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Edit Member Modal -->
+    <div id="edit-modal" class="edit-profile-modal">
+        <div class="edit-modal-card">
+            <div class="edit-modal-header">
+                <h3 id="edit-title">Edit Member</h3>
+                <button type="button" class="edit-close-btn" onclick="closeEditModal()">&times;</button>
+            </div>
+
+            <div class="edit-two-col">
+                <div class="edit-field">
+                    <label for="edit-name">Display Name</label>
+                    <input type="text" id="edit-name">
+                </div>
+                <div class="edit-field">
+                    <label for="edit-section">Section</label>
+                    <select id="edit-section">
+                        <option value="founder">Founder</option>
+                        <option value="shinigami">Shinigami</option>
+                        <option value="og">OG</option>
+                        <option value="members">Members</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="edit-field">
+                <label for="edit-bio">Bio</label>
+                <textarea id="edit-bio" rows="2"></textarea>
+            </div>
+
+            <div class="edit-field">
+                <label>Background (Preset, URL, or Upload)</label>
+                <select id="edit-bg-preset"
+                    onchange="if(this.value) document.getElementById('edit-bg-url').value=this.value;">
+                    <option value="">-- Pick preset --</option>
+                    <option value="assets/francis.png">francis.png</option>
+                    <option value="assets/zz.png">zz.png</option>
+                    <option value="assets/z.png">z.png</option>
+                    <option value="assets/12.png">12.png</option>
+                    <option value="assets/main-page5.gif">main-page5.gif</option>
+                    <option value="assets/Mallari.gif">Mallari.gif</option>
+                </select>
+                <input type="url" id="edit-bg-url" placeholder="https://..." style="margin-top: 8px;">
+                <div class="edit-upload-row">
+                    <label class="edit-upload-label">
+                        <i class='bx bx-upload'></i> <span id="edit-bg-upload-text">Upload Image / GIF</span>
+                        <input type="file" accept="image/*" onchange="uploadToCloudinary('bg', this)">
+                    </label>
+                </div>
+            </div>
+
+            <div class="edit-field">
+                <label>Profile Music (Preset, URL, or Upload)</label>
+                <select id="edit-music-preset" onchange="onMusicPreset(this)">
+                    <option value="">-- Pick preset song --</option>
+                    <option value="assets/I Wonder.mp3" data-title="I Wonder" data-artist="Kanye West">I Wonder - Kanye
+                        West</option>
+                    <option value="assets/SUPAFLY - GTFA! (lyrics).mp3" data-title="GTFA!" data-artist="SUPAFLY">GTFA! -
+                        SUPAFLY</option>
+                    <option value="assets/5ive - Me And My Brother.mp3" data-title="Me And My Brother"
+                        data-artist="5ive">Me And My Brother - 5ive</option>
+                    <option value="assets/KODAK BLU - gaspari (OLV).mp3" data-title="Kodak Blu"
+                        data-artist="Gaspari777">Kodak Blu - Gaspari777</option>
+                    <option value="assets/mainMusic.mp3" data-title="Ya Dig?" data-artist="Hev Abi">Ya Dig? - Hev Abi
+                    </option>
+                    <option value="assets/si_slime_tumatawag.mp3" data-title="Ghetto Love Calls"
+                        data-artist="Slimescar">Ghetto Love Calls - Slimescar</option>
+                    <option value="assets/sensuMusic.wav" data-title="Sensu" data-artist="Esse">Sensu</option>
+                </select>
+                <input type="url" id="edit-music-url" placeholder="https://..." style="margin-top: 8px;">
+                <div class="edit-upload-row">
+                    <label class="edit-upload-label">
+                        <i class='bx bx-music'></i> <span id="edit-music-upload-text">Upload Audio (.mp3 / .wav)</span>
+                        <input type="file" accept="audio/*" onchange="uploadToCloudinary('music', this)">
+                    </label>
+                </div>
+            </div>
+
+            <div class="edit-two-col">
+                <div class="edit-field">
+                    <label for="edit-music-name">Song Title</label>
+                    <input type="text" id="edit-music-name">
+                </div>
+                <div class="edit-field">
+                    <label for="edit-music-artist">Artist</label>
+                    <input type="text" id="edit-music-artist">
+                </div>
+            </div>
+
+            <button type="button" id="edit-save-btn" class="edit-btn-primary" onclick="saveEditMember()">Save
+                Changes</button>
+            <div id="edit-msg" class="edit-status-msg"></div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="../eyescript.js"></script>
+
+    <script>
+        const ADMIN_PASSWORD = 'esse2026';
+        const CLOUDINARY_CLOUD_NAME = 's8m2fhsp';
+        const CLOUDINARY_UPLOAD_PRESET = 'esse_uploads';
+
+        const members = [
+            { name: "Frncs", username: "esse", pin: "1234", discordId: "285061795029450754", bio: "OG Shinigami Member.", background: "assets/francis.png", backgroundMusicUrl: "assets/I Wonder.mp3", backgroundMusicName: "I Wonder", backgroundMusicArtist: "Kanye West", section: "shinigami" },
+            { name: "!NX", username: "qx_444", pin: "1234", discordId: "1294114074002718771", bio: "Founder of Esse.", background: "assets/zz.png", backgroundMusicUrl: "assets/SUPAFLY - GTFA! (lyrics).mp3", backgroundMusicName: "GTFA!", backgroundMusicArtist: "SUPAFLY", section: "shinigami" },
+            { name: "Trevor", username: "trevor", pin: "1234", discordId: "474567869519101953", bio: "OG Member of Esse.", background: "assets/zz.png", backgroundMusicUrl: "assets/5ive - Me And My Brother.mp3", backgroundMusicName: "Me And My Brother", backgroundMusicArtist: "5ive", section: "og", hideFromHof: true },
+            { name: "Quer", username: "quer", pin: "1234", discordId: "1213158954197327932", bio: "OG Member of Esse.", background: "assets/zz.png", section: "og", hideFromHof: true },
+            { name: "BXRT", username: "bxrt", pin: "1234", discordId: "562605372611887112", bio: "OG Shinigami Member.", background: "assets/zz.png", section: "shinigami" },
+            { name: "OWA", username: "owa", pin: "1234", discordId: "823010677823635497", bio: "Founder of Esse.", background: "assets/zz.png", section: "shinigami" },
+            { name: "Pxnta", username: "pxnta", pin: "1234", discordId: "1223205105227010094", bio: "Founder of Mallari.", background: "assets/zz.png", section: "shinigami" }
+        ];
+
+        let editingUsername = null;
+
+        function handleAdminLogin() {
+            const entered = document.getElementById('admin-pass-input').value;
+            const msg = document.getElementById('login-msg');
+            if (entered !== ADMIN_PASSWORD) {
+                msg.textContent = 'Incorrect Admin Password.';
+                msg.className = 'edit-status-msg error';
+                return;
+            }
+            sessionStorage.setItem('esse_admin', '1');
+            sessionStorage.setItem('esse_admin_pass', entered);
+            showDashboard();
+        }
+
+        function showDashboard() {
+            document.getElementById('login-step').style.display = 'none';
+            document.getElementById('dashboard-step').style.display = 'block';
+            loadMembers();
+            loadGallery();
+            loadKeyList();
+        }
+
+        function switchAdminTab(tab) {
+            document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+            document.getElementById('tab-members').style.display = tab === 'members' ? 'block' : 'none';
+            document.getElementById('tab-gallery').style.display = tab === 'gallery' ? 'block' : 'none';
+            document.getElementById('tab-keys').style.display = tab === 'keys' ? 'block' : 'none';
+            document.getElementById('tab-keylist').style.display = tab === 'keylist' ? 'block' : 'none';
+            if (tab === 'keylist') loadKeyList();
+        }
+
+        let allKeys = [];
+        let keyFilter = 'all';
+
+        function getKeyStatus(k) {
+            if (k.revoked) return 'revoked';
+            if (k.expiresAt && k.expiresAt !== 'lifetime') {
+                if (Date.now() > new Date(k.expiresAt).getTime()) return 'expired';
+            }
+            return 'ongoing';
+        }
+
+        function formatRemaining(expiresAt) {
+            if (!expiresAt || expiresAt === 'lifetime') return 'Lifetime';
+            const diff = new Date(expiresAt).getTime() - Date.now();
+            if (diff <= 0) return `Expired ${new Date(expiresAt).toLocaleDateString()}`;
+            const days = Math.floor(diff / 86400000);
+            const hrs = Math.floor((diff % 86400000) / 3600000);
+            const mins = Math.floor((diff % 3600000) / 60000);
+            if (days > 0) return `${days}d ${hrs}h left`;
+            if (hrs > 0) return `${hrs}h ${mins}m left`;
+            return `${mins}m left`;
+        }
+
+        async function loadKeyList() {
+            const container = document.getElementById('keys-list-container');
+            const msg = document.getElementById('keylist-msg');
+            if (!container) return;
+            try {
+                const snap = await db.collection('license_keys').orderBy('createdAt', 'desc').get();
+                allKeys = [];
+                snap.forEach(doc => allKeys.push({ id: doc.id, ...doc.data() }));
+
+                // Fetch bound HWIDs from Netlify Blobs ("licenses" store)
+                if (allKeys.length > 0) {
+                    try {
+                        const adminPassword = sessionStorage.getItem('esse_admin_pass') || ADMIN_PASSWORD;
+                        const hwidRes = await fetch('/.netlify/functions/verify', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                action: 'list-hwids',
+                                adminPassword,
+                                keys: allKeys.map(k => k.key)
+                            })
+                        });
+                        if (hwidRes.ok) {
+                            const hwidData = await hwidRes.json();
+                            const hwids = hwidData.hwids || {};
+                            allKeys.forEach(k => {
+                                k.boundHwid = hwids[k.key]?.hwid || null;
+                            });
+                        }
+                    } catch (hErr) {
+                        console.warn('Could not load HWIDs from Netlify Blobs:', hErr);
+                    }
+                }
+
+                renderKeyList();
+                if (msg) msg.textContent = '';
+            } catch (e) {
+                console.warn('Could not load keys:', e);
+                if (msg) {
+                    msg.textContent = `Could not load keys: ${e.message}`;
+                    msg.className = 'edit-status-msg error';
+                }
+            }
+        }
+
+        function setKeyFilter(f) {
+            keyFilter = f;
+            document.querySelectorAll('.key-filter-btn').forEach(b => b.classList.toggle('active', b.dataset.kfilter === f));
+            renderKeyList();
+        }
+
+        function renderKeyList() {
+            const container = document.getElementById('keys-list-container');
+            if (!container) return;
+
+            const counts = { all: allKeys.length, ongoing: 0, expired: 0, revoked: 0 };
+            allKeys.forEach(k => { counts[getKeyStatus(k)]++; });
+
+            document.getElementById('kcount-all').textContent = counts.all;
+            document.getElementById('kcount-ongoing').textContent = counts.ongoing;
+            document.getElementById('kcount-expired').textContent = counts.expired;
+            document.getElementById('kcount-revoked').textContent = counts.revoked;
+
+            const list = keyFilter === 'all' ? allKeys : allKeys.filter(k => getKeyStatus(k) === keyFilter);
+            container.innerHTML = '';
+
+            if (list.length === 0) {
+                const empty = document.createElement('div');
+                empty.style.cssText = 'color: rgba(255,255,255,0.5); font-size: 0.82rem; text-align: center; padding: 20px;';
+                empty.textContent = 'No keys in this category yet.';
+                container.appendChild(empty);
+                return;
+            }
+
+            list.forEach(k => {
+                const status = getKeyStatus(k);
+                const row = document.createElement('div');
+                row.className = 'admin-member-row';
+
+                const info = document.createElement('div');
+                info.className = 'admin-member-info';
+
+                const top = document.createElement('div');
+                const code = document.createElement('strong');
+                code.style.fontFamily = 'monospace';
+                code.textContent = k.key;
+                const badge = document.createElement('span');
+                badge.className = `key-status-badge ${status}`;
+                badge.textContent = status;
+                top.appendChild(code);
+                top.appendChild(badge);
+
+                const sub = document.createElement('span');
+                sub.className = 'admin-member-sub';
+                const noteText = k.note ? `${k.note} • ` : '';
+                const hwidText = k.boundHwid ? `HWID: ${k.boundHwid}` : 'HWID: Unbound';
+                sub.textContent = `${noteText}${(k.duration || '').toUpperCase()} • ${formatRemaining(k.expiresAt)} • ${hwidText}`;
+
+                info.appendChild(top);
+                info.appendChild(sub);
+
+                const actions = document.createElement('div');
+                actions.className = 'admin-member-actions';
+
+                const copyBtn = document.createElement('button');
+                copyBtn.type = 'button';
+                copyBtn.className = 'admin-mini-btn';
+                copyBtn.textContent = 'Copy';
+                copyBtn.onclick = () => {
+                    navigator.clipboard.writeText(k.key);
+                    copyBtn.textContent = 'Copied';
+                    setTimeout(() => copyBtn.textContent = 'Copy', 1000);
+                };
+
+                const resetHwidBtn = document.createElement('button');
+                resetHwidBtn.type = 'button';
+                resetHwidBtn.className = 'admin-mini-btn';
+                resetHwidBtn.textContent = 'Reset HWID';
+                resetHwidBtn.disabled = !k.boundHwid;
+                resetHwidBtn.style.opacity = k.boundHwid ? '1' : '0.45';
+                resetHwidBtn.onclick = () => resetKeyHwid(k.key);
+
+                const revBtn = document.createElement('button');
+                revBtn.type = 'button';
+                revBtn.className = 'admin-mini-btn';
+                revBtn.textContent = k.revoked ? 'Restore' : 'Revoke';
+                revBtn.onclick = () => toggleRevokeKey(k.id, !k.revoked);
+
+                const delBtn = document.createElement('button');
+                delBtn.type = 'button';
+                delBtn.className = 'admin-mini-btn danger';
+                delBtn.textContent = 'Delete';
+                delBtn.onclick = () => deleteKeyRecord(k.id);
+
+                actions.appendChild(copyBtn);
+                actions.appendChild(resetHwidBtn);
+                actions.appendChild(revBtn);
+                actions.appendChild(delBtn);
+
+                row.appendChild(info);
+                row.appendChild(actions);
+                container.appendChild(row);
+            });
+        }
+
+        async function resetKeyHwid(key) {
+            if (!confirm(`Reset bound HWID for ${key}? This allows it to bind to a new PC.`)) return;
+            try {
+                const adminPassword = sessionStorage.getItem('esse_admin_pass') || ADMIN_PASSWORD;
+                const res = await fetch('/.netlify/functions/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'reset-hwid', adminPassword, key })
+                });
+                const data = await res.json();
+                if (!res.ok || !data.ok) {
+                    alert('Reset HWID failed: ' + (data.error || 'unknown error'));
+                    return;
+                }
+                await loadKeyList();
+            } catch (e) {
+                alert('Reset HWID failed: ' + e.message);
+            }
+        }
+
+        async function toggleRevokeKey(id, revokeState) {
+            try {
+                await db.collection('license_keys').doc(id).set({ revoked: revokeState }, { merge: true });
+                await loadKeyList();
+            } catch (e) {
+                alert('Update failed: ' + e.message);
+            }
+        }
+
+        async function deleteKeyRecord(id) {
+            if (!confirm(`Delete key ${id} from list?`)) return;
+            try {
+                await db.collection('license_keys').doc(id).delete();
+                await loadKeyList();
+            } catch (e) {
+                alert('Delete failed: ' + e.message);
+            }
+        }
+
+        async function generateLicenseKey() {
+            const duration = document.getElementById('key-duration').value;
+            const note = document.getElementById('key-note').value.trim();
+            const btn = document.getElementById('gen-key-btn');
+            const msg = document.getElementById('key-gen-msg');
+            const box = document.getElementById('generated-key-box');
+            const adminPassword = sessionStorage.getItem('esse_admin_pass') || ADMIN_PASSWORD;
+
+            btn.disabled = true;
+            msg.textContent = 'Generating...';
+            msg.className = 'edit-status-msg';
+            box.style.display = 'none';
+
+            try {
+                const res = await fetch('/.netlify/functions/generate-key', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ adminPassword, duration })
+                });
+                const data = await res.json();
+                if (!res.ok || !data.ok) {
+                    msg.textContent = data.error || 'Failed to generate key.';
+                    msg.className = 'edit-status-msg error';
+                    return;
+                }
+
+                // Save key to Firestore for tracking in Key List
+                try {
+                    await db.collection('license_keys').doc(data.key).set({
+                        key: data.key,
+                        duration: data.duration,
+                        expiresAt: data.expiresAt,
+                        note,
+                        revoked: false,
+                        createdAt: Date.now()
+                    });
+                    document.getElementById('key-note').value = '';
+                    loadKeyList();
+                } catch (fsErr) {
+                    console.warn('Could not save key to Firestore:', fsErr);
+                }
+
+                document.getElementById('generated-key-text').textContent = data.key;
+                document.getElementById('generated-key-exp').textContent =
+                    data.expiresAt === 'lifetime'
+                        ? 'Duration: Lifetime (never expires)'
+                        : `Expires: ${new Date(data.expiresAt).toLocaleString()}`;
+                box.style.display = 'block';
+                msg.textContent = '';
+            } catch (e) {
+                msg.textContent = `Error: ${e.message}`;
+                msg.className = 'edit-status-msg error';
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function copyGeneratedKey() {
+            const text = document.getElementById('generated-key-text').textContent;
+            if (!text) return;
+            navigator.clipboard.writeText(text);
+            document.getElementById('key-gen-msg').textContent = 'Copied to clipboard!';
+            document.getElementById('key-gen-msg').className = 'edit-status-msg success';
+        }
+
+        async function verifyTestKey() {
+            const key = document.getElementById('test-key-input').value.trim();
+            const hwid = document.getElementById('test-hwid-input').value.trim();
+            const msg = document.getElementById('test-key-msg');
+            if (!key) return;
+            msg.textContent = 'Checking...';
+            msg.className = 'edit-status-msg';
+            try {
+                const res = await fetch('/.netlify/functions/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key, hwid })
+                });
+                const data = await res.json();
+                if (res.ok && data.valid) {
+                    msg.textContent = `Valid key! Bound HWID: ${data.hwid}`;
+                    msg.className = 'edit-status-msg success';
+                    loadKeyList();
+                } else {
+                    msg.textContent = `Invalid: ${data.error || 'rejected'}`;
+                    msg.className = 'edit-status-msg error';
+                }
+            } catch (e) {
+                msg.textContent = `Error: ${e.message}`;
+                msg.className = 'edit-status-msg error';
+            }
+        }
+
+        async function loadMembers() {
+            try {
+                const snap = await db.collection('profiles').get();
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    if (!data) return;
+                    const existing = members.find(m => m.username === doc.id);
+                    if (existing) {
+                        Object.assign(existing, data);
+                    } else if (data.name && data.discordId) {
+                        members.push({ username: doc.id, ...data });
+                    }
+                });
+            } catch (e) {
+                console.warn('Could not load profiles:', e);
+            }
+            renderMembersList();
+        }
+
+        function renderMembersList() {
+            const list = document.getElementById('members-list');
+            list.innerHTML = '';
+            members.forEach(m => {
+                const row = document.createElement('div');
+                row.className = 'admin-member-row';
+
+                const info = document.createElement('div');
+                info.className = 'admin-member-info';
+                const title = document.createElement('strong');
+                title.textContent = `${m.name} (@${m.username})`;
+                const sub = document.createElement('span');
+                sub.className = 'admin-member-sub';
+                sub.textContent = `${(m.section || 'shinigami').toUpperCase()} | ID: ${m.discordId}`;
+                info.appendChild(title);
+                info.appendChild(sub);
+
+                const actions = document.createElement('div');
+                actions.className = 'admin-member-actions';
+
+                const editBtn = document.createElement('button');
+                editBtn.type = 'button';
+                editBtn.className = 'admin-mini-btn';
+                editBtn.textContent = 'Edit';
+                editBtn.onclick = () => openEditModal(m);
+
+                const delBtn = document.createElement('button');
+                delBtn.type = 'button';
+                delBtn.className = 'admin-mini-btn danger';
+                delBtn.textContent = 'Delete';
+                delBtn.onclick = () => deleteMember(m.username);
+
+                actions.appendChild(editBtn);
+                actions.appendChild(delBtn);
+                row.appendChild(info);
+                row.appendChild(actions);
+                list.appendChild(row);
+            });
+        }
+
+        async function addMember() {
+            const name = document.getElementById('new-name').value.trim();
+            const username = document.getElementById('new-username').value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
+            const discordId = document.getElementById('new-discord').value.trim();
+            const pin = document.getElementById('new-pin').value.trim() || '1234';
+            const bio = document.getElementById('new-bio').value.trim() || 'Esse Member.';
+            const section = document.getElementById('new-section').value || 'shinigami';
+            const msg = document.getElementById('member-msg');
+            const btn = document.getElementById('add-member-btn');
+
+            if (!name || !username || !discordId) {
+                msg.textContent = 'Name, Username, and Discord ID are required.';
+                msg.className = 'edit-status-msg error';
+                return;
+            }
+
+            btn.disabled = true;
+            msg.textContent = 'Adding...';
+            msg.className = 'edit-status-msg';
+
+            const data = {
+                name,
+                username,
+                pin,
+                discordId,
+                bio,
+                background: 'assets/zz.png',
+                backgroundMusicUrl: '',
+                backgroundMusicName: '',
+                backgroundMusicArtist: '',
+                section,
+                hideFromHof: section !== 'shinigami',
+                socials: {}
+            };
+
+            try {
+                await db.collection('profiles').doc(username).set(data, { merge: true });
+                const idx = members.findIndex(m => m.username === username);
+                if (idx >= 0) members[idx] = { ...members[idx], ...data };
+                else members.push(data);
+                renderMembersList();
+                document.getElementById('new-name').value = '';
+                document.getElementById('new-username').value = '';
+                document.getElementById('new-discord').value = '';
+                document.getElementById('new-bio').value = '';
+                msg.textContent = `Added @${username}!`;
+                msg.className = 'edit-status-msg success';
+            } catch (e) {
+                msg.textContent = `Failed: ${e.message}`;
+                msg.className = 'edit-status-msg error';
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function deleteMember(username) {
+            if (!confirm(`Delete @${username}?`)) return;
+            try {
+                await db.collection('profiles').doc(username).delete();
+                const idx = members.findIndex(m => m.username === username);
+                if (idx >= 0) members.splice(idx, 1);
+                renderMembersList();
+            } catch (e) {
+                alert('Delete failed: ' + e.message);
+            }
+        }
+
+        function openEditModal(member) {
+            editingUsername = member.username;
+            document.getElementById('edit-title').textContent = `Edit @${member.username}`;
+            document.getElementById('edit-name').value = member.name || '';
+            document.getElementById('edit-section').value = member.section || (member.hideFromHof ? 'og' : 'shinigami');
+            document.getElementById('edit-bio').value = member.bio || '';
+            document.getElementById('edit-bg-url').value = member.background || '';
+            document.getElementById('edit-bg-preset').value = '';
+            document.getElementById('edit-music-url').value = member.backgroundMusicUrl || '';
+            document.getElementById('edit-music-preset').value = '';
+            document.getElementById('edit-music-name').value = member.backgroundMusicName || '';
+            document.getElementById('edit-music-artist').value = member.backgroundMusicArtist || '';
+            document.getElementById('edit-bg-upload-text').textContent = 'Upload Image / GIF';
+            document.getElementById('edit-music-upload-text').textContent = 'Upload Audio (.mp3 / .wav)';
+            document.getElementById('edit-msg').textContent = '';
+            document.getElementById('edit-modal').classList.add('active');
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.remove('active');
+        }
+
+        function onMusicPreset(sel) {
+            if (!sel.value) return;
+            document.getElementById('edit-music-url').value = sel.value;
+            const opt = sel.options[sel.selectedIndex];
+            if (opt.dataset.title) document.getElementById('edit-music-name').value = opt.dataset.title;
+            if (opt.dataset.artist) document.getElementById('edit-music-artist').value = opt.dataset.artist;
+        }
+
+        async function saveEditMember() {
+            const member = members.find(m => m.username === editingUsername);
+            if (!member) return;
+
+            const section = document.getElementById('edit-section').value || 'shinigami';
+            const updated = {
+                name: document.getElementById('edit-name').value.trim() || member.name,
+                section,
+                hideFromHof: section !== 'shinigami',
+                bio: document.getElementById('edit-bio').value.trim(),
+                background: document.getElementById('edit-bg-url').value.trim(),
+                backgroundMusicUrl: document.getElementById('edit-music-url').value.trim(),
+                backgroundMusicName: document.getElementById('edit-music-name').value.trim(),
+                backgroundMusicArtist: document.getElementById('edit-music-artist').value.trim()
+            };
+
+            const btn = document.getElementById('edit-save-btn');
+            const msg = document.getElementById('edit-msg');
+            btn.disabled = true;
+            msg.textContent = 'Saving...';
+
+            try {
+                await db.collection('profiles').doc(member.username).set(updated, { merge: true });
+                Object.assign(member, updated);
+                renderMembersList();
+                msg.textContent = 'Saved!';
+                msg.className = 'edit-status-msg success';
+                setTimeout(closeEditModal, 600);
+            } catch (e) {
+                msg.textContent = `Save failed: ${e.message}`;
+                msg.className = 'edit-status-msg error';
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function uploadToCloudinary(type, inputEl) {
+            const file = inputEl.files[0];
+            if (!file) return;
+
+            const labelId = type === 'gallery' ? 'gal-upload-text' : (type === 'bg' ? 'edit-bg-upload-text' : 'edit-music-upload-text');
+            const label = document.getElementById(labelId);
+            const msg = document.getElementById(type === 'gallery' ? 'gal-msg' : 'edit-msg');
+
+            if (type === 'gallery') {
+                document.getElementById('gal-type').value = file.type.startsWith('video/') ? 'video' : 'image';
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+            formData.append('folder', type === 'gallery' ? 'gallery' : `profiles/${editingUsername || 'admin'}`);
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`);
+            xhr.upload.onprogress = (e) => {
+                if (e.lengthComputable) label.textContent = `Uploading... ${Math.round((e.loaded / e.total) * 100)}%`;
+            };
+            xhr.onload = () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    const data = JSON.parse(xhr.responseText);
+                    if (type === 'gallery') document.getElementById('gal-url').value = data.secure_url;
+                    else if (type === 'bg') document.getElementById('edit-bg-url').value = data.secure_url;
+                    else {
+                        document.getElementById('edit-music-url').value = data.secure_url;
+                        if (!document.getElementById('edit-music-name').value.trim()) {
+                            document.getElementById('edit-music-name').value = file.name.replace(/\.[^/.]+$/, '');
+                        }
+                    }
+                    label.textContent = `Uploaded: ${file.name}`;
+                    msg.textContent = 'Uploaded!';
+                    msg.className = 'edit-status-msg success';
+                } else {
+                    label.textContent = 'Upload failed';
+                    msg.textContent = 'Upload failed.';
+                    msg.className = 'edit-status-msg error';
+                }
+            };
+            xhr.send(formData);
+        }
+
+        async function loadGallery() {
+            const list = document.getElementById('gal-list');
+            try {
+                const snap = await db.collection('gallery').orderBy('createdAt', 'desc').get();
+                list.innerHTML = '';
+                snap.forEach(doc => {
+                    const item = doc.data();
+                    const card = document.createElement('div');
+                    card.className = 'admin-gallery-item';
+                    if (item.type === 'video') {
+                        const v = document.createElement('video');
+                        v.src = item.url;
+                        v.muted = true;
+                        card.appendChild(v);
+                    } else {
+                        const i = document.createElement('img');
+                        i.src = item.url;
+                        card.appendChild(i);
+                    }
+                    const del = document.createElement('button');
+                    del.type = 'button';
+                    del.className = 'admin-gallery-del';
+                    del.innerHTML = "<i class='bx bx-trash'></i>";
+                    del.onclick = async () => {
+                        if (!confirm('Delete gallery item?')) return;
+                        await db.collection('gallery').doc(doc.id).delete();
+                        loadGallery();
+                    };
+                    card.appendChild(del);
+                    list.appendChild(card);
+                });
+            } catch (e) {
+                console.warn('Gallery load error:', e);
+            }
+        }
+
+        async function saveGallery() {
+            const url = document.getElementById('gal-url').value.trim();
+            const type = document.getElementById('gal-type').value;
+            const caption = document.getElementById('gal-caption').value.trim();
+            const msg = document.getElementById('gal-msg');
+            const btn = document.getElementById('gal-save-btn');
+            if (!url) {
+                msg.textContent = 'Upload a file or paste a URL first.';
+                msg.className = 'edit-status-msg error';
+                return;
+            }
+            btn.disabled = true;
+            try {
+                await db.collection('gallery').add({ url, type, caption, createdAt: Date.now() });
+                document.getElementById('gal-url').value = '';
+                document.getElementById('gal-caption').value = '';
+                document.getElementById('gal-upload-text').textContent = 'Choose image or video from device';
+                msg.textContent = 'Added to gallery!';
+                msg.className = 'edit-status-msg success';
+                loadGallery();
+            } catch (e) {
+                msg.textContent = `Save failed: ${e.message}`;
+                msg.className = 'edit-status-msg error';
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        if (sessionStorage.getItem('esse_admin') === '1') {
+            showDashboard();
+        }
+    </script>
+</body>
+
+</html>

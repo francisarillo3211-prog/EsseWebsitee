@@ -31,6 +31,11 @@
         <div class="top-nav-links">
             <a href="#" id="nav-home" class="top-nav-link active" onclick="switchView('home'); return false;">HOME</a>
             <a href="#gallery" id="nav-gallery" class="top-nav-link" onclick="switchView('gallery'); return false;">GALLERY</a>
+            <a href="/.netlify/functions/discord-auth" id="nav-discord-login" class="top-nav-link" style="display: inline-flex; align-items: center; gap: 5px;" title="Sign in with Discord to edit your profile"><i class='bx bxl-discord-alt'></i> LOGIN</a>
+            <span id="nav-discord-user" class="top-nav-link" style="display: none; align-items: center; gap: 10px; cursor: default;">
+                <span id="nav-discord-name" style="cursor: pointer;" onclick="openMyDiscordProfile()" title="Open my profile"></span>
+                <a href="#" onclick="logoutDiscord(); return false;" style="color: #ff7b7b; font-size: 0.72rem; letter-spacing: 1px; text-decoration: none; border: 1px solid rgba(255,123,123,0.35); padding: 2px 8px; border-radius: 999px;" title="Sign out of Discord">SIGN OUT</a>
+            </span>
         </div>
     </nav>
 
@@ -258,8 +263,10 @@
 
                     <div id="modal-socials" class="modal-socials-row"></div>
 
-                    <div class="text-center">
+                    <div class="text-center" style="display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap;">
                         <a href="#" onclick="closeProfile(); return false;" class="modal-return-home">Return Home</a>
+                        <a href="#" id="modal-edit-profile-btn" onclick="openEditProfile(); return false;" class="modal-return-home" style="display: none; align-items: center; gap: 5px; border-color: rgba(88, 101, 242, 0.55); color: #cfd5ff;"><i class='bx bx-edit-alt'></i> Edit Profile</a>
+                        <a href="#" id="modal-signout-btn" onclick="logoutDiscord(); return false;" class="modal-return-home" style="display: none; align-items: center; gap: 5px; border-color: rgba(255, 107, 107, 0.45); color: #ff9a9a;"><i class='bx bx-log-out'></i> Sign Out</a>
                     </div>
                 </div>
             </div>
@@ -285,13 +292,18 @@
                 <button type="button" class="edit-close-btn" onclick="closeEditProfile()">&times;</button>
             </div>
 
-            <!-- Step 1: PIN Lock -->
+            <!-- Step 1: Discord Auth / PIN Lock -->
             <div id="edit-pin-step">
+                <button type="button" class="edit-btn-primary" style="width: 100%; background: #5865F2; color: #fff; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="loginWithDiscord(currentProfileUsername)">
+                    <i class='bx bxl-discord-alt' style="font-size: 1.15rem;"></i> Login with Discord
+                </button>
+                <div id="edit-discord-hint" class="edit-status-msg" style="margin-bottom: 10px;"></div>
+                <div style="text-align: center; font-size: 0.72rem; color: #666; letter-spacing: 1px; text-transform: uppercase; margin: 10px 0;">or use Member PIN</div>
                 <div class="edit-field">
                     <label for="edit-pin-input">Enter Member PIN</label>
                     <input type="password" id="edit-pin-input" placeholder="Enter your PIN to unlock" onkeydown="if(event.key==='Enter') verifyEditPin();">
                 </div>
-                <button type="button" class="edit-btn-primary" onclick="verifyEditPin()">Unlock</button>
+                <button type="button" class="edit-btn-primary" onclick="verifyEditPin()">Unlock with PIN</button>
                 <div id="edit-pin-msg" class="edit-status-msg"></div>
             </div>
 
@@ -739,6 +751,7 @@
             const member = members.find(m => m.username === username);
             if (!member) return;
             currentProfileUsername = member.username;
+            updateProfileEditButton();
 
             document.getElementById('modal-display-name').textContent = member.name;
             document.getElementById('modal-username').textContent = `@${member.username}`;
@@ -1211,6 +1224,158 @@
             document.getElementById('edit-music-upload-text').textContent = 'Upload Audio (.mp3 / .wav) from device';
         }
 
+        let discordUser = null;
+
+        function updateDiscordNav() {
+            const loginLink = document.getElementById('nav-discord-login');
+            const userBadge = document.getElementById('nav-discord-user');
+            const nameEl = document.getElementById('nav-discord-name');
+            if (!loginLink || !userBadge || !nameEl) return;
+
+            if (discordUser) {
+                loginLink.style.display = 'none';
+                userBadge.style.display = 'inline-flex';
+                nameEl.innerHTML = `<i class='bx bxl-discord-alt' style="color:#5865F2;"></i> ${discordUser.username}`;
+            } else {
+                loginLink.style.display = 'inline-flex';
+                userBadge.style.display = 'none';
+            }
+            updateProfileEditButton();
+        }
+
+        function updateProfileEditButton() {
+            const btn = document.getElementById('modal-edit-profile-btn');
+            const signOutBtn = document.getElementById('modal-signout-btn');
+            const member = members.find(m => m.username === currentProfileUsername);
+            const isOwner = Boolean(discordUser && member && String(discordUser.id) === String(member.discordId));
+            if (btn) {
+                btn.style.display = (member && (isAdminUnlocked || isOwner)) ? 'inline-flex' : 'none';
+            }
+            if (signOutBtn) {
+                signOutBtn.style.display = discordUser ? 'inline-flex' : 'none';
+            }
+        }
+
+        function loginWithDiscord(openUsername) {
+            const q = openUsername ? `?open=${encodeURIComponent(openUsername)}` : '';
+            window.location.href = `/.netlify/functions/discord-auth${q}`;
+        }
+
+        async function logoutDiscord() {
+            try {
+                await fetch('/.netlify/functions/discord-logout');
+            } catch (e) {
+                console.warn('Logout error:', e);
+            }
+            discordUser = null;
+            updateDiscordNav();
+        }
+
+        async function createMyDiscordProfile() {
+            if (!discordUser) return;
+            const existing = members.find(m => String(m.discordId) === String(discordUser.id));
+            if (existing) {
+                openProfile(existing.username);
+                return;
+            }
+
+            let baseUsername = String(discordUser.username || 'member')
+                .toLowerCase()
+                .replace(/[^a-z0-9_]/g, '') || `user${String(discordUser.id).slice(-4)}`;
+            let username = baseUsername;
+            let suffix = 1;
+            while (members.some(m => m.username === username)) {
+                username = `${baseUsername}${suffix++}`;
+            }
+
+            const newMember = {
+                name: discordUser.global_name || discordUser.username || username,
+                username,
+                pin: '1234',
+                discordId: String(discordUser.id),
+                bio: 'Esse Member.',
+                background: 'assets/zz.png',
+                backgroundMusicUrl: '',
+                backgroundMusicName: '',
+                backgroundMusicArtist: '',
+                section: 'members',
+                hideFromHof: true,
+                socials: {}
+            };
+
+            try {
+                if (typeof db !== 'undefined') {
+                    await db.collection('profiles').doc(username).set({
+                        name: newMember.name,
+                        discordId: newMember.discordId,
+                        bio: newMember.bio,
+                        background: newMember.background,
+                        backgroundMusicUrl: '',
+                        backgroundMusicName: '',
+                        backgroundMusicArtist: '',
+                        section: newMember.section,
+                        hideFromHof: true,
+                        socials: {}
+                    }, { merge: true });
+                }
+                members.push(newMember);
+                if (typeof renderHallOfFame === 'function') renderHallOfFame();
+                const welcomeOverlay = document.getElementById('welcome-overlay');
+                if (welcomeOverlay) welcomeOverlay.style.display = 'none';
+                openProfile(newMember.username);
+                setTimeout(() => openEditProfile(), 150);
+            } catch (e) {
+                console.error('Auto-create profile failed:', e);
+                alert(`Could not create profile: ${e.message}`);
+            }
+        }
+
+        async function openMyDiscordProfile() {
+            if (!discordUser) return;
+            if (profilesReadyPromise) await profilesReadyPromise;
+            const match = members.find(m => String(m.discordId) === String(discordUser.id));
+            if (match && typeof openProfile === 'function') {
+                openProfile(match.username);
+            } else {
+                await createMyDiscordProfile();
+            }
+        }
+
+        async function loadDiscordAuth() {
+            try {
+                const res = await fetch('/.netlify/functions/discord-me', { cache: 'no-store' });
+                const data = await res.json();
+                discordUser = data.loggedIn ? data.user : null;
+            } catch {
+                discordUser = null;
+            }
+            updateDiscordNav();
+
+            const params = new URLSearchParams(window.location.search);
+            const openTarget = params.get('open');
+            const discordLoginFlag = params.get('discord_login');
+            if (discordLoginFlag || params.has('discord_error')) {
+                const cleanUrl = window.location.pathname + (window.location.hash || '');
+                history.replaceState(null, '', cleanUrl);
+            }
+            if (discordLoginFlag && discordUser) {
+                if (profilesReadyPromise) await profilesReadyPromise;
+                const ownMember = members.find(m => String(m.discordId) === String(discordUser.id));
+                const targetMember = openTarget ? members.find(m => m.username === openTarget) : ownMember;
+                const welcomeOverlay = document.getElementById('welcome-overlay');
+                if (welcomeOverlay) welcomeOverlay.style.display = 'none';
+
+                if (targetMember && typeof openProfile === 'function') {
+                    openProfile(targetMember.username);
+                    if (String(discordUser.id) === String(targetMember.discordId)) {
+                        setTimeout(() => openEditProfile(), 150);
+                    }
+                } else if (!ownMember) {
+                    await createMyDiscordProfile();
+                }
+            }
+        }
+
         function openEditProfile() {
             const member = members.find(m => m.username === currentProfileUsername);
             if (!member) return;
@@ -1222,12 +1387,24 @@
             document.getElementById('edit-form-msg').textContent = '';
             document.getElementById('edit-form-msg').className = 'edit-status-msg';
 
-            if (isAdminUnlocked) {
+            const discordOwned = discordUser && String(discordUser.id) === String(member.discordId);
+            if (isAdminUnlocked || discordOwned) {
                 populateEditForm(member);
                 document.getElementById('edit-pin-step').style.display = 'none';
                 document.getElementById('edit-form-step').style.display = 'block';
                 document.getElementById('edit-profile-modal').classList.add('active');
                 return;
+            }
+
+            const hintEl = document.getElementById('edit-discord-hint');
+            if (hintEl) {
+                if (discordUser) {
+                    hintEl.textContent = `Signed in as @${discordUser.username} (ID ${discordUser.id}), which doesn't match @${member.username}'s Discord ID.`;
+                    hintEl.className = 'edit-status-msg error';
+                } else {
+                    hintEl.textContent = '';
+                    hintEl.className = 'edit-status-msg';
+                }
             }
 
             document.getElementById('edit-pin-step').style.display = 'block';
@@ -1881,8 +2058,9 @@
             }
         }
 
+        const profilesReadyPromise = loadCustomProfilesFromFirestore();
         loadTrack(0);
-        loadCustomProfilesFromFirestore();
+        loadDiscordAuth();
         renderHallOfFame();
         setInterval(renderHallOfFame, 30000);
         setTimeout(checkStartupHash, 500);
